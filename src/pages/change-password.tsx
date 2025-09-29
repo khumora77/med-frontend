@@ -1,34 +1,40 @@
-import { useState } from "react";
 import {
   Card,
-  CardHeader,
   CardContent,
+  CardHeader,
+  Typography,
   TextField,
   Button,
-  Typography,
 } from "@mui/material";
 
-export default function ChangePasswordForm() {
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../store/authStore";
+import { rolePath } from "../routes/role-path";
+
+const ChangePassword = () => {
+  const { changePassword, changing, changeError, user } = useAuth();
   const [currentPassword, setCurrent] = useState("");
   const [newPassword, setNext] = useState("");
-  const [changing, setChanging] = useState(false);
-  const [changeError, setChangeError] = useState("");
   const [ok, setOk] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setChanging(true);
+    setOk("");
     try {
-      // Bu yerda API chaqiriladi
-      await new Promise((res) => setTimeout(res, 1000)); // demo uchun
-      setOk("✅ Parol muvaffaqiyatli yangilandi!");
-      setChangeError("");
-    } catch (err) {
-      setChangeError("❌ Parolni almashtirishda xatolik yuz berdi!");
-      setOk("");
-    } finally {
-      setChanging(false);
-    }
+      await changePassword(currentPassword, newPassword);
+      setOk("Password changed successfully");
+      if (user?.role) {
+        navigate(rolePath[user.role as keyof typeof rolePath], {
+          replace: true,
+        });
+      } else {
+        navigate("/login", { replace: true });
+      }
+      setCurrent("");
+      setNext("");
+    } catch {}
   };
 
   return (
@@ -37,18 +43,35 @@ export default function ChangePasswordForm() {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        marginTop: "200px",
+        marginTop: "150px",
+        padding: "16px",
       }}
     >
-      <Card sx={{ width: "100%", maxWidth: 400 }}>
-        <CardHeader title="New Password" />
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: 400,
+          borderRadius: 3,
+          boxShadow: 6,
+        }}
+      >
+        <CardHeader
+          title={
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: "bold", textAlign: "center" }}
+            >
+              Change Password
+            </Typography>
+          }
+        />
         <CardContent>
           <form
             onSubmit={onSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
           >
             <TextField
-              label="Joriy parol"
+              label="Password"
               type="password"
               value={currentPassword}
               onChange={(e) => setCurrent(e.target.value)}
@@ -57,7 +80,7 @@ export default function ChangePasswordForm() {
             />
 
             <TextField
-              label="Yangi parol"
+              label="New password"
               type="password"
               value={newPassword}
               onChange={(e) => setNext(e.target.value)}
@@ -68,20 +91,35 @@ export default function ChangePasswordForm() {
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               disabled={changing}
               fullWidth
+              sx={{
+                py: 1.2,
+                fontWeight: "bold",
+                borderRadius: 2,
+                textTransform: "none",
+                background: "linear-gradient(90deg, #1976d2, #42a5f5)",
+                "&:hover": {
+                  background: "linear-gradient(90deg, #1565c0, #1e88e5)",
+                },
+              }}
             >
-              {changing ? "Yuborilmoqda..." : "Parolni almashtirish"}
+              {changing ? "Changed..." : "Changing the password"}
             </Button>
 
             {changeError && (
-              <Typography variant="body2" color="error">
+              <Typography
+                variant="body2"
+                sx={{ color: "error.main", textAlign: "center", mt: 1 }}
+              >
                 {changeError}
               </Typography>
             )}
             {ok && (
-              <Typography variant="body2" color="success.main">
+              <Typography
+                variant="body2"
+                sx={{ color: "success.main", textAlign: "center", mt: 1 }}
+              >
                 {ok}
               </Typography>
             )}
@@ -90,4 +128,6 @@ export default function ChangePasswordForm() {
       </Card>
     </div>
   );
-}
+};
+
+export default ChangePassword;

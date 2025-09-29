@@ -51,10 +51,10 @@ function CreateUserForm() {
       }}
     >
       <Card sx={{ maxWidth: 400, width: "100%" }}>
-        <CardHeader title="New Password" />
+        <CardHeader title="New User" />
         <CardContent>
           <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <Typography variant="h6">Yangi foydalanuvchi</Typography>
+            <Typography variant="h6">Create new user</Typography>
 
             <TextField
               label="Email"
@@ -66,7 +66,7 @@ function CreateUserForm() {
             />
 
             <TextField
-              label="Ism"
+              label="FirstName"
               type="text"
               value={firstName}
               onChange={(e) => setFirst(e.target.value)}
@@ -75,7 +75,7 @@ function CreateUserForm() {
             />
 
             <TextField
-              label="Familiya"
+              label="LastName"
               type="text"
               value={lastName}
               onChange={(e) => setLast(e.target.value)}
@@ -96,7 +96,7 @@ function CreateUserForm() {
             </TextField>
 
             <TextField
-              label="Vaqtinchalik parol"
+              label="Temporary password"
               type="password"
               value={temporaryPassword}
               onChange={(e) => setTempPass(e.target.value)}
@@ -112,7 +112,7 @@ function CreateUserForm() {
                 disabled={loading}
                 fullWidth
               >
-                {loading ? "Yaratilmoqda..." : "Yaratish"}
+                {loading ? "Created..." : "Create"}
               </Button>
             </CardActions>
 

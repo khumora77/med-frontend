@@ -20,24 +20,21 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import {
-  Avatar,
+
   IconButton,
   Input,
   Badge,
   Menu,
   MenuItem,
   Typography,
-  Tooltip,
-  Button,
+ 
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-
-
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import Image from "../../assets/image.png";
+
 import { useAuth } from "../../store/authStore";
 import { LogoutButton } from "./logout";
 import Profile from "./profile";
@@ -345,7 +342,6 @@ export default function Sidebar() {
           <Divider sx={{ mb: 2 }} />
           {/* Logout tugmasi - endi funksiya bilan ishlaydi */}
           <ListItemButton
-            onClick={handleLogout}
             sx={{
               borderRadius: 1,
               color: "error.main",
@@ -358,7 +354,6 @@ export default function Sidebar() {
             <ListItemIcon sx={{ color: "inherit" }}>
               <LogoutButton />
             </ListItemIcon>
-            <ListItemText primary="LogOut" />
           </ListItemButton>
         </Box>
       </Drawer>
