@@ -7,6 +7,7 @@ import Admin from "./pages/admin";
 import Doctor from "./pages/doctor";
 import Reception from "./pages/reception";
 import { AuthRefresh } from "./bootstrap/auth-refresh";
+import CreateUserForm from "./components/users/create-user";
 
 function App() {
   return (
@@ -38,7 +39,8 @@ function App() {
               </RoleRoute>
             }
           />
-          <Route path="/" />
+           <Route path="/create-user" element={<CreateUserForm />} />
+           
         </Routes>
       </AuthRefresh>
     </>
