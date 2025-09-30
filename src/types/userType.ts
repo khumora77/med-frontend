@@ -1,55 +1,27 @@
-// types/user.ts
+// types/userType.ts
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName: string; // Backendda firstname
+  lastName: string;  // Backendda lastname  
   role: 'admin' | 'doctor' | 'reception' | 'user';
-  status: 'active' | 'inactive' | 'banned';
+  status: 'active' | 'inactive' | 'banned'; // Backendda isActive
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateUserDto {
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName: string; // Backend firstname ga o'tadi
+  lastName: string;  // Backend lastname ga o'tadi
   role: 'admin' | 'doctor' | 'reception' | 'user';
   temporaryPassword: string;
 }
 
-export interface UpdateRoleDto {
-  role: 'admin' | 'doctor' | 'reception' | 'user';
-}
-
-export interface UpdateStatusDto {
-  status: 'active' | 'inactive' | 'banned';
-}
-
-export interface ListUsersDto {
-  page?: number;
-  limit?: number;
-  search?: string;
-  role?: string;
-  status?: string;
-}
-
-export interface UsersResponse {
-  users: User[];
-  total: number;
-  page: number;
-  limit: number;
-}
-
-export interface UserState {
-  users: User[];
-  currentUser: User | null;
-  loading: boolean;
-  error: string | null;
-  pagination: {
-    current: number;
-    pageSize: number;
-    total: number;
-  };
-  filters: ListUsersDto;
+export interface UpdateUserDto {
+  email?: string;
+  firstName?: string; // Backend firstname ga o'tadi
+  lastName?: string;  // Backend lastname ga o'tadi
+  role?: 'admin' | 'doctor' | 'reception' | 'user';
+  status?: 'active' | 'inactive' | 'banned'; // Backend isActive ga o'tadi
 }

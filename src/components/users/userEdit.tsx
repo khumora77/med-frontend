@@ -1,14 +1,6 @@
 // components/UserEditModal.tsx
 import React, { useEffect } from 'react';
-import {
-  Modal,
-  Form,
-  Input,
-  Select,
-  Button,
-  Space,
-  message
-} from 'antd';
+import { Modal, Form, Input, Select, Button, Space, message } from 'antd';
 import { useUserStore } from '../../store/user-store';
 import type { User } from '../../types/userType';
 
@@ -46,7 +38,6 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     if (!user) return;
 
     try {
-      // Faqat o'zgartirilgan fieldlarni yuboramiz
       const updateData: any = {};
       
       if (values.email !== user.email) updateData.email = values.email;
@@ -60,12 +51,14 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         if (success) {
           message.success('Foydalanuvchi muvaffaqiyatli yangilandi');
           onSuccess();
+        } else {
+          message.error('Yangilashda xatolik');
         }
       } else {
         message.info('Hech qanday o\'zgartirish kiritilmadi');
       }
     } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
+      message.error('Xatolik yuz berdi');
     }
   };
 
@@ -73,12 +66,15 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     if (!user) return;
     
     try {
-      const success = await updateUserRole(user.id, { role: role as any });
+      const success = await updateUserRole(user.id, { role });
       if (success) {
         message.success('Role muvaffaqiyatli yangilandi');
+        onSuccess();
+      } else {
+        message.error('Role yangilashda xatolik');
       }
     } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
+      message.error('Xatolik yuz berdi');
     }
   };
 
@@ -86,12 +82,15 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     if (!user) return;
     
     try {
-      const success = await updateUserStatus(user.id, { status: status as any });
+      const success = await updateUserStatus(user.id, { status });
       if (success) {
         message.success('Status muvaffaqiyatli yangilandi');
+        onSuccess();
+      } else {
+        message.error('Status yangilashda xatolik');
       }
     } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
+      message.error('Xatolik yuz berdi');
     }
   };
 
@@ -107,7 +106,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
       onCancel={handleCancel}
       footer={null}
       width={500}
-      forceRender // Formni saqlab qolish uchun
+      destroyOnClose
     >
       <Form
         form={form}
@@ -143,7 +142,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         </Form.Item>
 
         <Form.Item name="role" label="Role">
-          <Select onChange={handleRoleChange}>
+          <Select onChange={handleRoleChange} placeholder="Roleni tanlang">
             <Option value="admin">Admin</Option>
             <Option value="doctor">Doctor</Option>
             <Option value="reception">Reception</Option>
@@ -152,7 +151,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         </Form.Item>
 
         <Form.Item name="status" label="Status">
-          <Select onChange={handleStatusChange}>
+          <Select onChange={handleStatusChange} placeholder="Statusni tanlang">
             <Option value="active">Faol</Option>
             <Option value="inactive">Nofaol</Option>
             <Option value="banned">Bloklangan</Option>

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Button, Select, Space, message } from 'antd';
 import { useUserStore } from '../../store/user-store';
-import type { CreateUserDto } from '../../types/userType';
+
 
 const { Option } = Select;
 
@@ -20,22 +20,33 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
   const [form] = Form.useForm();
   const { createUser, loading } = useUserStore();
   const [submitting, setSubmitting] = useState(false);
+// components/CreateUserForm.tsx - submit funksiyasini yangilaymiz
+const handleSubmit = async (values: any) => {
+  setSubmitting(true);
+  try {
+    // Backendga mos data tayyorlaymiz
+    const userData = {
+      email: values.email,
+      firstName: values.firstName, // Backend firstname ga o'tadi
+      lastName: values.lastName,   // Backend lastname ga o'tadi
+      role: values.role,
+      temporaryPassword: values.temporaryPassword
+    };
 
-  const handleSubmit = async (values: CreateUserDto) => {
-    setSubmitting(true);
-    try {
-      const success = await createUser(values);
-      if (success) {
-        message.success('Foydalanuvchi muvaffaqiyatli yaratildi');
-        form.resetFields();
-        onSuccess();
-      }
-    } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
-    } finally {
-      setSubmitting(false);
+    const success = await createUser(userData);
+    if (success) {
+      message.success('Foydalanuvchi muvaffaqiyatli yaratildi');
+      form.resetFields();
+      onSuccess();
+    } else {
+      message.error('Foydalanuvchi yaratishda xatolik');
     }
-  };
+  } catch (error) {
+    message.error('Xatolik yuz berdi');
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   const generateTemporaryPassword = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -58,7 +69,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
       onCancel={handleCancel}
       footer={null}
       width={600}
-      forceRender // Formni saqlab qolish uchun
+      forceRender 
     >
       <Form
         form={form}
@@ -69,7 +80,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
       >
         <Form.Item
           name="email"
-          label="Email"
+          label="Email" 
           rules={[
             { required: true, message: 'Email kiritishingiz shart' },
             { type: 'email', message: 'To\'g\'ri email formatini kiriting' }
