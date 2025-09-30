@@ -6,6 +6,6 @@ export const sidebar=[
     {name:"Change-password", route:"/change-password", icon:AccountBox},
     {name:"Doctors", route:"/doctors", icon:FaUserDoctor},
     {name:"Receptions", route:"/receptions", icon:FaUserTie},
-    {name:"Create-User", route:"/create-user", icon:FaUsers},
+    {name:"Users", route:"/users", icon:FaUsers},
     {name:"Settings", route:"/settings", icon:Settings},
 ]

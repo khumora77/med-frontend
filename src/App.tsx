@@ -5,9 +5,11 @@ import Admin from "./pages/admin";
 import Doctor from "./pages/doctor";
 import Reception from "./pages/reception";
 import { AuthRefresh } from "./bootstrap/auth-refresh";
-import CreateUserForm from "./components/users/create-user";
+
 import ChangePasswordForm from "./pages/change-password";
 import Sidebar from "./components/navigation/sidebar";
+import { UsersList } from "./components/users/user-list";
+import { CreateUserForm } from "./components/users/create-user";
 
 function App() {
   return (
@@ -41,9 +43,10 @@ function App() {
             }
           />
           <Route element={<Sidebar />}>
-            <Route path="/create-user" element={<CreateUserForm />} />
+            <Route path="/users" element={<UsersList />} />
             <Route path="/change-password" element={<ChangePasswordForm />} />
           </Route>
+          <Route path="/create-user" element={<CreateUserForm/>}/>
         </Routes>
       </AuthRefresh>
     </>

@@ -1,127 +1,152 @@
-import React, { useState } from "react";
-import { api } from "../../service/api";
-import { Button, Card, CardActions, CardContent, CardHeader, MenuItem, TextField, Typography } from "@mui/material";
+// components/CreateUserForm.tsx
+import React, { useState } from 'react';
+import { Modal, Form, Input, Button, Select, Space, message } from 'antd';
+import { useUserStore } from '../../store/user-store';
+import type { CreateUserDto } from '../../types/userType';
 
-type Role = "admin" | "doctor" | "reception";
+const { Option } = Select;
 
-function CreateUserForm() {
-  const [email, setEmail] = useState("");
-  const [firstName, setFirst] = useState("");
-  const [lastName, setLast] = useState("");
-  const [role, setRole] = useState<Role>("doctor");
-  const [temporaryPassword, setTempPass] = useState("");
-
-  const [loading, setLoading] = useState(false)
-  const [msg, setMsg] = useState<string | null>(null)
-  const [err, setErr] = useState<string | null>(null);
-
-  const onSubmit = async (e: React.FormEvent)=>{
-    e.preventDefault()
-    setMsg(null)
-    setErr(null)
-    setLoading(true);
-
-    try{
-        const {data} = await api.post("/users", {
-            email,
-            firstName,
-            lastName,
-            role,
-            temporaryPassword,
-        })
-        setMsg(`Foydalanuvchi yaratildi: ${data.email}`);
-      setEmail("");
-      setFirst("");
-      setLast("");
-      setRole("doctor");
-      setTempPass("");
-    }catch (e: any) {
-      setErr(e?.response?.data?.message || "Yaratishda xatolik");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "200px",
-        width: "100%",
-      }}
-    >
-      <Card sx={{ maxWidth: 400, width: "100%" }}>
-        <CardHeader title="New User" />
-        <CardContent>
-          <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <Typography variant="h6">Create new user</Typography>
-
-            <TextField
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              fullWidth
-            />
-
-            <TextField
-              label="FirstName"
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirst(e.target.value)}
-              required
-              fullWidth
-            />
-
-            <TextField
-              label="LastName"
-              type="text"
-              value={lastName}
-              onChange={(e) => setLast(e.target.value)}
-              required
-              fullWidth
-            />
-
-            <TextField
-              select
-              label="Role"
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-              fullWidth
-            >
-              <MenuItem value="doctor">Doctor</MenuItem>
-              <MenuItem value="reception">Reception</MenuItem>
-              <MenuItem value="admin">Admin</MenuItem>
-            </TextField>
-
-            <TextField
-              label="Temporary password"
-              type="password"
-              value={temporaryPassword}
-              onChange={(e) => setTempPass(e.target.value)}
-              required
-              fullWidth
-            />
-
-            <CardActions>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                disabled={loading}
-                fullWidth
-              >
-                {loading ? "Created..." : "Create"}
-              </Button>
-            </CardActions>
-
-            {msg && <Typography color="success.main">{msg}</Typography>}
-            {err && <Typography color="error.main">{err}</Typography>}
-          </form>
-        </CardContent>
-      </Card>
-    </div>;
+interface CreateUserFormProps {
+  visible: boolean;
+  onCancel: () => void;
+  onSuccess: () => void;
 }
 
-export default CreateUserForm;
+export const CreateUserForm: React.FC<CreateUserFormProps> = ({
+  visible,
+  onCancel,
+  onSuccess
+}) => {
+  const [form] = Form.useForm();
+  const { createUser, loading } = useUserStore();
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (values: CreateUserDto) => {
+    setSubmitting(true);
+    try {
+      const success = await createUser(values);
+      if (success) {
+        message.success('Foydalanuvchi muvaffaqiyatli yaratildi');
+        form.resetFields();
+        onSuccess();
+      }
+    } catch (error) {
+      // Error store orqali avtomatik handle qilinadi
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const generateTemporaryPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < 10; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    form.setFieldValue('temporaryPassword', password);
+  };
+
+  const handleCancel = () => {
+    form.resetFields();
+    onCancel();
+  };
+
+  return (
+    <Modal
+      title="Yangi Foydalanuvchi Yaratish"
+      open={visible}
+      onCancel={handleCancel}
+      footer={null}
+      width={600}
+      forceRender // Formni saqlab qolish uchun
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleSubmit}
+        initialValues={{ role: 'doctor' }}
+        disabled={submitting || loading}
+      >
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[
+            { required: true, message: 'Email kiritishingiz shart' },
+            { type: 'email', message: 'To\'g\'ri email formatini kiriting' }
+          ]}
+        >
+          <Input placeholder="user@example.com" size="large" />
+        </Form.Item>
+
+        <Form.Item
+          name="firstName"
+          label="Ism"
+          rules={[{ required: true, message: 'Ism kiritishingiz shart' }]}
+        >
+          <Input placeholder="Foydalanuvchi ismi" size="large" />
+        </Form.Item>
+
+        <Form.Item
+          name="lastName"
+          label="Familiya"
+          rules={[{ required: true, message: 'Familiya kiritishingiz shart' }]}
+        >
+          <Input placeholder="Foydalanuvchi familiyasi" size="large" />
+        </Form.Item>
+
+        <Form.Item
+          name="role"
+          label="Role"
+          rules={[{ required: true, message: 'Roleni tanlash shart' }]}
+        >
+          <Select placeholder="Roleni tanlang" size="large">
+            <Option value="admin">Admin</Option>
+            <Option value="doctor">Doctor</Option>
+            <Option value="reception">Reception</Option>
+            <Option value="user">User</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          name="temporaryPassword"
+          label="Vaqtincha Parol"
+          rules={[{ required: true, message: 'Parol kiritishingiz shart' }]}
+        >
+          <Space.Compact style={{ width: '100%' }}>
+            <Input.Password 
+              placeholder="Vaqtincha parol" 
+              size="large"
+            />
+            <Button 
+              type="default" 
+              onClick={generateTemporaryPassword}
+              size="large"
+            >
+              Avto Generate
+            </Button>
+          </Space.Compact>
+        </Form.Item>
+
+        <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
+            <Button 
+              onClick={handleCancel} 
+              size="large"
+              disabled={submitting || loading}
+            >
+              Bekor qilish
+            </Button>
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              loading={submitting || loading}
+              size="large"
+            >
+              Yaratish
+            </Button>
+          </Space>
+        </Form.Item>
+      </Form>
+    </Modal>
+  );
+};
