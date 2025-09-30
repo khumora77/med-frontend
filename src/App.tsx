@@ -7,8 +7,9 @@ import Reception from "./pages/reception";
 import { AuthRefresh } from "./bootstrap/auth-refresh";
 
 import ChangePasswordForm from "./pages/change-password";
-import Sidebar from "./components/navigation/sidebar";
+import Sidebar from "./components/navigation/adminSidebar";
 import { UsersList } from "./components/users/user-list";
+import { Dashboard } from "./components/dashboard/dashboard";
 import { CreateUserForm } from "./components/users/create-user";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
           <Route element={<Sidebar />}>
             <Route path="/users" element={<UsersList />} />
             <Route path="/change-password" element={<ChangePasswordForm />} />
+          <Route path="/dashboard" element={<Dashboard/>}/>
           </Route>
           <Route path="/create-user" element={<CreateUserForm/>}/>
         </Routes>

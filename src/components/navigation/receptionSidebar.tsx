@@ -18,27 +18,15 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-
-import {
-
-  IconButton,
-  Input,
-  Badge,
-  Menu,
-  MenuItem,
-  Typography,
- 
-} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-
-import { Link, Outlet, useNavigate } from "react-router-dom";
-
+import { Link, Outlet } from "react-router-dom";
 import { useAuth } from "../../store/authStore";
 import { LogoutButton } from "./logout";
 import Profile from "./profile";
-import { sidebar } from "../constants";
+import { receptionSidebar } from "../constants";
 
 const drawerWidth = 240;
 
@@ -113,55 +101,10 @@ const Drawer = styled(MuiDrawer, {
       }),
 }));
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: "rgba(255, 255, 255, 0.15)",
-  "&:hover": {
-    backgroundColor: "rgba(255, 255, 255, 0.25)",
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "auto",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const StyledInputBase = styled(Input)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
-
-export default function Sidebar() {
+export default function ReceptionSidebar() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [notificationsAnchorEl, setNotificationsAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-
-  // Auth store va navigate ni qo'shamiz
-  const { logout, user } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -170,34 +113,6 @@ export default function Sidebar() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleNotificationsMenuOpen = (
-    event: React.MouseEvent<HTMLElement>
-  ) => {
-    setNotificationsAnchorEl(event.currentTarget);
-  };
-
-  const handleNotificationsMenuClose = () => {
-    setNotificationsAnchorEl(null);
-  };
-
-  // Logout funksiyasini qo'shamiz
-  const handleLogout = () => {
-    console.log("🔄 Logout bosildi");
-    logout(); // Auth store dagi logout funksiyasini chaqiramiz
-    handleMenuClose(); // Menyuni yopamiz
-  };
-
-  const menuId = "primary-search-account-menu";
-  const notificationsId = "notifications-menu";
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -227,47 +142,12 @@ export default function Sidebar() {
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            {/* Foydalanuvchi ma'lumotlari */}
-            <Typography variant="body2" sx={{ color: "black" }}>
+            <Typography variant="body2" sx={{ color: "white" }}>
               {user?.email} ({user?.role})
             </Typography>
-
-            <IconButton
-              size="large"
-              aria-label="show new notifications"
-              color="inherit"
-              onClick={handleNotificationsMenuOpen}
-            >
-              <Badge badgeContent={4} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
           </Box>
 
           <Profile />
-
-          {/* Bildirishnomalar menyusi */}
-          <Menu
-            anchorEl={notificationsAnchorEl}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            id={notificationsId}
-            keepMounted
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            open={Boolean(notificationsAnchorEl)}
-            onClose={handleNotificationsMenuClose}
-          >
-            <MenuItem onClick={handleNotificationsMenuClose}>
-              <Typography variant="body2">
-                Yangi xabarlar mavjud emas
-              </Typography>
-            </MenuItem>
-          </Menu>
         </Toolbar>
       </AppBar>
 
@@ -292,7 +172,7 @@ export default function Sidebar() {
         <Divider />
 
         <List>
-          {sidebar.map((item) => {
+          {receptionSidebar.map((item) => {
             const Icon = item.icon;
             return (
               <Link
@@ -340,7 +220,6 @@ export default function Sidebar() {
 
         <Box sx={{ mt: "auto", p: 2 }}>
           <Divider sx={{ mb: 2 }} />
-          {/* Logout tugmasi - endi funksiya bilan ishlaydi */}
           <ListItemButton
             sx={{
               borderRadius: 1,
