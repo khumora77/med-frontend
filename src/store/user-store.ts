@@ -2,17 +2,25 @@
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { userService } from "../service/userApi";
-import type { User, UserState, CreateUserDto, UpdateUserDto } from "../types/userType";
+import type {
+  User,
+  UserState,
+  CreateUserDto,
+  UpdateUserDto,
+} from "../types/userType";
 
 interface UserStore extends UserState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setFilters: (filters: Partial<UserState['filters']>) => void;
+  setFilters: (filters: Partial<UserState["filters"]>) => void;
   fetchUsers: (params?: any) => Promise<void>;
   createUser: (userData: CreateUserDto) => Promise<boolean>;
   updateUser: (id: string, userData: UpdateUserDto) => Promise<boolean>;
   updateUserRole: (id: string, roleData: { role: string }) => Promise<boolean>;
-  updateUserStatus: (id: string, statusData: { status: string }) => Promise<boolean>;
+  updateUserStatus: (
+    id: string,
+    statusData: { status: string }
+  ) => Promise<boolean>;
   deleteUser: (id: string) => Promise<boolean>;
   clearError: () => void;
   resetFilters: () => void;
@@ -23,7 +31,7 @@ const initialState: UserState = {
   loading: false,
   error: null,
   pagination: { current: 1, pageSize: 10, total: 0 },
-  filters: { page: 1, limit: 10 }
+  filters: { page: 1, limit: 10 },
 };
 
 export const useUserStore = create<UserStore>()(
@@ -33,97 +41,99 @@ export const useUserStore = create<UserStore>()(
         ...initialState,
 
         setLoading: (loading) => set({ loading }),
-        
+
         setError: (error) => set({ error }),
-        
+
         clearError: () => set({ error: null }),
-        
-        setFilters: (filters) => set({ 
-          filters: { ...get().filters, ...filters } 
-        }),
+
+        setFilters: (filters) =>
+          set({
+            filters: { ...get().filters, ...filters },
+          }),
 
         resetFilters: () => set({ filters: initialState.filters }),
 
-
         // store/user-store.ts - SIMPLIFIED VERSION
-fetchUsers: async (params = {}) => {
-  set({ loading: true, error: null });
-  try {
-    const currentFilters = get().filters;
-    
-    // Oddiy parametrlar
-    const requestParams: any = {
-      page: params.page || currentFilters.page || 1,
-      limit: params.limit || currentFilters.limit || 10,
-    };
+        fetchUsers: async (params = {}) => {
+          set({ loading: true, error: null });
+          try {
+            const currentFilters = get().filters;
 
-    // Faqat asosiy filterlar
-    if (params.search && params.search.trim() !== '') {
-      requestParams.search = params.search.trim();
-    }
-    if (params.role) {
-      requestParams.role = params.role;
-    }
-    if (params.status === 'active' || params.status === 'inactive') {
-      requestParams.status = params.status;
-    }
+            // Oddiy parametrlar
+            const requestParams: any = {
+              page: params.page || currentFilters.page || 1,
+              limit: params.limit || currentFilters.limit || 10,
+            };
 
-    console.log('🔄 Fetching with simplified params:', requestParams);
-    const data = await userService.getAll(requestParams);
+            // Faqat asosiy filterlar
+            if (params.search && params.search.trim() !== "") {
+              requestParams.search = params.search.trim();
+            }
+            if (params.role) {
+              requestParams.role = params.role;
+            }
+            if (params.status === "active" || params.status === "inactive") {
+              requestParams.status = params.status;
+            }
 
-    // Ma'lumotlarni qayta ishlash
-    let usersArray: User[] = [];
-    let totalCount = 0;
+            console.log("🔄 Fetching with simplified params:", requestParams);
+            const data = await userService.getAll(requestParams);
 
-    if (data) {
-      if (data.items && Array.isArray(data.items)) {
-        usersArray = data.items.map((item: any) => ({
-          id: item.id,
-          email: item.email,
-          firstName: item.firstname || item.firstName || '',
-          lastName: item.lastname || item.lastName || '',
-          role: item.role,
-          status: item.isActive ? 'active' : 'inactive',
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt
-        }));
-        totalCount = data.total || 0;
-      } else if (Array.isArray(data)) {
-        // Agar backend to'g'ridan-to'g'ri array qaytarsa
-        usersArray = data.map((item: any) => ({
-          id: item.id,
-          email: item.email,
-          firstName: item.firstname || item.firstName || '',
-          lastName: item.lastname || item.lastName || '',
-          role: item.role,
-          status: item.isActive ? 'active' : 'inactive',
-          createdAt: item.createdAt,
-          updatedAt: item.updatedAt
-        }));
-        totalCount = data.length;
-      }
-    }
+            // Ma'lumotlarni qayta ishlash
+            let usersArray: User[] = [];
+            let totalCount = 0;
 
-    set({
-      users: usersArray,
-      pagination: {
-        current: requestParams.page || 1,
-        pageSize: requestParams.limit || 10,
-        total: totalCount
-      },
-      loading: false
-    });
+            if (data) {
+              if (data.items && Array.isArray(data.items)) {
+                usersArray = data.items.map((item: any) => ({
+                  id: item.id,
+                  email: item.email,
+                  firstName: item.firstname || item.firstName || "",
+                  lastName: item.lastname || item.lastName || "",
+                  role: item.role,
+                  status: item.isActive ? "active" : "inactive",
+                  createdAt: item.createdAt,
+                  updatedAt: item.updatedAt,
+                }));
+                totalCount = data.total || 0;
+              } else if (Array.isArray(data)) {
+                // Agar backend to'g'ridan-to'g'ri array qaytarsa
+                usersArray = data.map((item: any) => ({
+                  id: item.id,
+                  email: item.email,
+                  firstName: item.firstname || item.firstName || "",
+                  lastName: item.lastname || item.lastName || "",
+                  role: item.role,
+                  status: item.isActive ? "active" : "inactive",
+                  createdAt: item.createdAt,
+                  updatedAt: item.updatedAt,
+                }));
+                totalCount = data.length;
+              }
+            }
 
-  } catch (error: any) {
-    console.error('❌ Fetch error:', error);
-    const errorMessage = error.response?.data?.message || error.message || "Xatolik yuz berdi";
-    set({ 
-      error: errorMessage,
-      loading: false,
-      users: [] // Xatolikda bo'sh ro'yxat
-    });
-  }
-},
+            set({
+              users: usersArray,
+              pagination: {
+                current: requestParams.page || 1,
+                pageSize: requestParams.limit || 10,
+                total: totalCount,
+              },
+              loading: false,
+            });
+          } catch (error: any) {
+            console.error("❌ Fetch error:", error);
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Xatolik yuz berdi";
+            set({
+              error: errorMessage,
+              loading: false,
+              users: [], // Xatolikda bo'sh ro'yxat
+            });
+          }
+        },
 
         createUser: async (userData: CreateUserDto) => {
           set({ loading: true, error: null });
@@ -132,7 +142,10 @@ fetchUsers: async (params = {}) => {
             await get().fetchUsers(get().filters);
             return true;
           } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || "Foydalanuvchi yaratishda xatolik";
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Foydalanuvchi yaratishda xatolik";
             set({ error: errorMessage });
             return false;
           } finally {
@@ -147,7 +160,10 @@ fetchUsers: async (params = {}) => {
             await get().fetchUsers(get().filters);
             return true;
           } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || "Foydalanuvchi yangilashda xatolik";
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Foydalanuvchi yangilashda xatolik";
             set({ error: errorMessage });
             return false;
           } finally {
@@ -162,7 +178,10 @@ fetchUsers: async (params = {}) => {
             await get().fetchUsers(get().filters);
             return true;
           } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || "Role yangilashda xatolik";
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Role yangilashda xatolik";
             set({ error: errorMessage });
             return false;
           } finally {
@@ -170,14 +189,20 @@ fetchUsers: async (params = {}) => {
           }
         },
 
-        updateUserStatus: async (id: string, statusData: { status: string }) => {
+        updateUserStatus: async (
+          id: string,
+          statusData: { status: string }
+        ) => {
           set({ loading: true, error: null });
           try {
             await userService.updateStatus(id, statusData);
             await get().fetchUsers(get().filters);
             return true;
           } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || "Status yangilashda xatolik";
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Status yangilashda xatolik";
             set({ error: errorMessage });
             return false;
           } finally {
@@ -192,7 +217,10 @@ fetchUsers: async (params = {}) => {
             await get().fetchUsers(get().filters);
             return true;
           } catch (error: any) {
-            const errorMessage = error.response?.data?.message || error.message || "Foydalanuvchi o'chirishda xatolik";
+            const errorMessage =
+              error.response?.data?.message ||
+              error.message ||
+              "Foydalanuvchi o'chirishda xatolik";
             set({ error: errorMessage });
             return false;
           } finally {
@@ -200,11 +228,11 @@ fetchUsers: async (params = {}) => {
           }
         },
       }),
-      { 
+      {
         name: "user-store",
-        partialize: (state) => ({ 
-          filters: state.filters 
-        })
+        partialize: (state) => ({
+          filters: state.filters,
+        }),
       }
     )
   )

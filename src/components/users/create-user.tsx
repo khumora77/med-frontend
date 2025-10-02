@@ -1,8 +1,6 @@
-// components/CreateUserForm.tsx
-import React, { useState } from 'react';
-import { Modal, Form, Input, Button, Select, Space, message } from 'antd';
-import { useUserStore } from '../../store/user-store';
-
+import React, { useState } from "react";
+import { Modal, Form, Input, Button, Select, Space, message } from "antd";
+import { useUserStore } from "../../store/user-store";
 
 const { Option } = Select;
 
@@ -15,46 +13,45 @@ interface CreateUserFormProps {
 export const CreateUserForm: React.FC<CreateUserFormProps> = ({
   visible,
   onCancel,
-  onSuccess
+  onSuccess,
 }) => {
   const [form] = Form.useForm();
   const { createUser, loading } = useUserStore();
   const [submitting, setSubmitting] = useState(false);
-// components/CreateUserForm.tsx - submit funksiyasini yangilaymiz
-const handleSubmit = async (values: any) => {
-  setSubmitting(true);
-  try {
-    // Backendga mos data tayyorlaymiz
-    const userData = {
-      email: values.email,
-      firstName: values.firstName, // Backend firstname ga o'tadi
-      lastName: values.lastName,   // Backend lastname ga o'tadi
-      role: values.role,
-      temporaryPassword: values.temporaryPassword
-    };
+  const handleSubmit = async (values: any) => {
+    setSubmitting(true);
+    try {
+      const userData = {
+        email: values.email,
+        firstName: values.firstName,
+        lastName: values.lastName,
+        role: values.role,
+        temporaryPassword: values.temporaryPassword,
+      };
 
-    const success = await createUser(userData);
-    if (success) {
-      message.success('Foydalanuvchi muvaffaqiyatli yaratildi');
-      form.resetFields();
-      onSuccess();
-    } else {
-      message.error('Foydalanuvchi yaratishda xatolik');
+      const success = await createUser(userData);
+      if (success) {
+        message.success("Foydalanuvchi muvaffaqiyatli yaratildi");
+        form.resetFields();
+        onSuccess();
+      } else {
+        message.error("Foydalanuvchi yaratishda xatolik");
+      }
+    } catch (error) {
+      message.error("Xatolik yuz berdi");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (error) {
-    message.error('Xatolik yuz berdi');
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
   const generateTemporaryPassword = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let password = '';
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let password = "";
     for (let i = 0; i < 10; i++) {
       password += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    form.setFieldValue('temporaryPassword', password);
+    form.setFieldValue("temporaryPassword", password);
   };
 
   const handleCancel = () => {
@@ -69,21 +66,21 @@ const handleSubmit = async (values: any) => {
       onCancel={handleCancel}
       footer={null}
       width={600}
-      forceRender 
+      forceRender
     >
       <Form
         form={form}
         layout="vertical"
         onFinish={handleSubmit}
-        initialValues={{ role: 'doctor' }}
+        initialValues={{ role: "doctor" }}
         disabled={submitting || loading}
       >
         <Form.Item
           name="email"
-          label="Email" 
+          label="Email"
           rules={[
-            { required: true, message: 'Email kiritishingiz shart' },
-            { type: 'email', message: 'To\'g\'ri email formatini kiriting' }
+            { required: true, message: "Email kiritishingiz shart" },
+            { type: "email", message: "To'g'ri email formatini kiriting" },
           ]}
         >
           <Input placeholder="user@example.com" size="large" />
@@ -92,7 +89,7 @@ const handleSubmit = async (values: any) => {
         <Form.Item
           name="firstName"
           label="Ism"
-          rules={[{ required: true, message: 'Ism kiritishingiz shart' }]}
+          rules={[{ required: true, message: "Ism kiritishingiz shart" }]}
         >
           <Input placeholder="Foydalanuvchi ismi" size="large" />
         </Form.Item>
@@ -100,7 +97,7 @@ const handleSubmit = async (values: any) => {
         <Form.Item
           name="lastName"
           label="Familiya"
-          rules={[{ required: true, message: 'Familiya kiritishingiz shart' }]}
+          rules={[{ required: true, message: "Familiya kiritishingiz shart" }]}
         >
           <Input placeholder="Foydalanuvchi familiyasi" size="large" />
         </Form.Item>
@@ -108,7 +105,7 @@ const handleSubmit = async (values: any) => {
         <Form.Item
           name="role"
           label="Role"
-          rules={[{ required: true, message: 'Roleni tanlash shart' }]}
+          rules={[{ required: true, message: "Roleni tanlash shart" }]}
         >
           <Select placeholder="Roleni tanlang" size="large">
             <Option value="admin">Admin</Option>
@@ -121,15 +118,12 @@ const handleSubmit = async (values: any) => {
         <Form.Item
           name="temporaryPassword"
           label="Vaqtincha Parol"
-          rules={[{ required: true, message: 'Parol kiritishingiz shart' }]}
+          rules={[{ required: true, message: "Parol kiritishingiz shart" }]}
         >
-          <Space.Compact style={{ width: '100%' }}>
-            <Input.Password 
-              placeholder="Vaqtincha parol" 
-              size="large"
-            />
-            <Button 
-              type="default" 
+          <Space.Compact style={{ width: "100%" }}>
+            <Input.Password placeholder="Vaqtincha parol" size="large" />
+            <Button
+              type="default"
               onClick={generateTemporaryPassword}
               size="large"
             >
@@ -139,17 +133,17 @@ const handleSubmit = async (values: any) => {
         </Form.Item>
 
         <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
-          <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-            <Button 
-              onClick={handleCancel} 
+          <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+            <Button
+              onClick={handleCancel}
               size="large"
               disabled={submitting || loading}
             >
               Bekor qilish
             </Button>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
+            <Button
+              type="primary"
+              htmlType="submit"
               loading={submitting || loading}
               size="large"
             >

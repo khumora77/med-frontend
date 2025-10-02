@@ -1,4 +1,4 @@
-// components/UsersList.tsx
+// components/PatientsList.tsx
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -23,44 +23,41 @@ import {
   DeleteOutlined,
   ReloadOutlined,
   FilterOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 
-import { UserEditModal } from "./userEdit";
-import { CreateUserForm } from "./create-user";
-import { useUserStore } from "../../store/user-store";
-import type { User } from "../../types/userType";
+import { PatientEditModal } from "./patientEdit";
+import { CreatePatientForm } from "./create-patient";
+import { PatientViewModal } from "./patientview";
+import { usePatientStore } from "../../store/patientStore";
 
 const { Option } = Select;
 const { Search } = Input;
 const { Text } = Typography;
 
-export const UsersList: React.FC = () => {
+export const PatientsList: React.FC = () => {
   const {
-    users,
+    patients,
     loading,
     error,
     pagination,
     filters,
-    fetchUsers,
-    deleteUser,
+    fetchPatients,
+    deletePatient,
+    updatePatient,
     setFilters,
     clearError,
     resetFilters,
-  } = useUserStore();
+  } = usePatientStore();
 
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
 
   useEffect(() => {
-    fetchUsers(filters);
+    fetchPatients(filters);
   }, []);
-
-  useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
-  }, [error]);
 
   const handleSearch = (value: string) => {
     const newFilters = {
@@ -69,61 +66,53 @@ export const UsersList: React.FC = () => {
       page: 1,
     };
     setFilters(newFilters);
-    fetchUsers(newFilters);
+    fetchPatients(newFilters);
   };
 
-  const handleRoleFilter = (value: string) => {
+  const handleGenderFilter = (value: string) => {
     const newFilters = {
       ...filters,
-      role: value || undefined,
+      gender: value || undefined,
       page: 1,
     };
     setFilters(newFilters);
-    fetchUsers(newFilters);
+    fetchPatients(newFilters);
   };
 
   const handleStatusFilter = (value: string) => {
-    // Faqat active/inactive
     const newFilters = {
       ...filters,
-      status: value === "active" || value === "inactive" ? value : undefined,
+      status: value || undefined,
       page: 1,
     };
     setFilters(newFilters);
-    fetchUsers(newFilters);
-  };
-
-  // Statusni ko'rsatish funksiyasini yangilaymiz
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "active":
-        return "Faol";
-      case "inactive":
-        return "Nofaol";
-      default:
-        return status;
-    }
+    fetchPatients(newFilters);
   };
 
   const handleRefresh = () => {
-    fetchUsers(filters);
+    fetchPatients(filters);
   };
 
   const handleClearFilters = () => {
     resetFilters();
-    fetchUsers(initialState.filters);
+    fetchPatients({ page: 1, limit: 10 });
   };
 
-  const handleEdit = (user: User) => {
-    setSelectedUser(user);
+  const handleEdit = (patient: any) => {
+    setSelectedPatient(patient);
     setEditModalVisible(true);
   };
 
-  const handleDelete = async (user: User) => {
+  const handleView = (patient: any) => {
+    setSelectedPatient(patient);
+    setViewModalVisible(true);
+  };
+
+  const handleDelete = async (patient: any) => {
     try {
-      const success = await deleteUser(user.id);
+      const success = await deletePatient(patient.id);
       if (success) {
-        message.success("Foydalanuvchi muvaffaqiyatli o'chirildi");
+        message.success("Bemor muvaffaqiyatli o'chirildi");
       }
     } catch (error) {
       // Error store orqali avtomatik handle qilinadi
@@ -132,42 +121,38 @@ export const UsersList: React.FC = () => {
 
   const handleUpdateSuccess = () => {
     setEditModalVisible(false);
-    setSelectedUser(null);
-    fetchUsers(filters);
+    setSelectedPatient(null);
+    fetchPatients(filters);
   };
 
   const handleCreateSuccess = () => {
     setCreateModalVisible(false);
-    fetchUsers(filters);
+    fetchPatients(filters);
   };
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "red";
-      case "doctor":
+  const getGenderColor = (gender: string) => {
+    switch (gender) {
+      case "male":
         return "blue";
-      case "reception":
+      case "female":
+        return "pink";
+      case "child":
         return "green";
-      case "user":
-        return "gray";
       default:
         return "default";
     }
   };
 
-  const getRoleText = (role: string) => {
-    switch (role) {
-      case "admin":
-        return "Admin";
-      case "doctor":
-        return "Doctor";
-      case "reception":
-        return "Reception";
-      case "user":
-        return "User";
+  const getGenderText = (gender: string) => {
+    switch (gender) {
+      case "male":
+        return "Erkak";
+      case "female":
+        return "Ayol";
+      case "child":
+        return "Bola";
       default:
-        return role;
+        return gender;
     }
   };
 
@@ -177,10 +162,23 @@ export const UsersList: React.FC = () => {
         return "green";
       case "inactive":
         return "orange";
-      case "banned":
-        return "red";
+      case "archived":
+        return "gray";
       default:
         return "default";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "active":
+        return "Faol";
+      case "inactive":
+        return "Nofaol";
+      case "archived":
+        return "Arxivlangan";
+      default:
+        return status;
     }
   };
 
@@ -193,8 +191,13 @@ export const UsersList: React.FC = () => {
     }
   };
 
+  const formatPhone = (phone: string) => {
+    if (!phone) return "-";
+    return phone;
+  };
+
   const hasActiveFilters = () => {
-    return !!(filters.search || filters.role || filters.status);
+    return !!(filters.search || filters.gender || filters.status);
   };
 
   const columns = [
@@ -202,8 +205,30 @@ export const UsersList: React.FC = () => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      width: 50,
-      render: (id: string) => <Text type="secondary">#{id.slice(0, 8)}</Text>,
+      width: 60,
+      render: (id: string) => <Text type="secondary">#{id?.slice(0, 6)}</Text>,
+    },
+    {
+      title: "Ism Familiya",
+      dataIndex: "firstName",
+      key: "name",
+      render: (firstName: string, record: any) => (
+        <Button
+          type="link"
+          onClick={() => handleView(record)}
+          style={{ padding: 0, height: "auto" }}
+        >
+          <Text strong>
+            {firstName} {record.lastName}
+          </Text>
+        </Button>
+      ),
+    },
+    {
+      title: "Telefon",
+      dataIndex: "phone",
+      key: "phone",
+      render: formatPhone,
     },
     {
       title: "Email",
@@ -212,21 +237,11 @@ export const UsersList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: "Ism",
-      dataIndex: "firstName",
-      key: "firstName",
-      render: (firstName: string, record: User) => (
-        <Text strong>
-          {firstName} {record.lastName}
-        </Text>
-      ),
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-      render: (role: string) => (
-        <Tag color={getRoleColor(role)}>{getRoleText(role)}</Tag>
+      title: "Jinsi",
+      dataIndex: "gender",
+      key: "gender",
+      render: (gender: string) => (
+        <Tag color={getGenderColor(gender)}>{getGenderText(gender)}</Tag>
       ),
     },
     {
@@ -238,7 +253,7 @@ export const UsersList: React.FC = () => {
       ),
     },
     {
-      title: "Yaratilgan",
+      title: "Qo'shilgan sana",
       dataIndex: "createdAt",
       key: "createdAt",
       render: formatDate,
@@ -246,10 +261,19 @@ export const UsersList: React.FC = () => {
     {
       title: "Harakatlar",
       key: "actions",
-      width: 120,
+      width: 140,
       fixed: "right" as const,
-      render: (record: User) => (
+      render: (record: any) => (
         <Space>
+          <Tooltip title="Ko'rish">
+            <Button
+              type="link"
+              icon={<EyeOutlined />}
+              onClick={() => handleView(record)}
+              size="small"
+            />
+          </Tooltip>
+
           <Tooltip title="Tahrirlash">
             <Button
               type="link"
@@ -260,8 +284,8 @@ export const UsersList: React.FC = () => {
           </Tooltip>
 
           <Popconfirm
-            title="Foydalanuvchini o'chirish"
-            description="Haqiqatan ham bu foydalanuvchini o'chirmoqchimisiz?"
+            title="Bemorni o'chirish"
+            description="Haqiqatan ham bu bemorni o'chirmoqchimisiz?"
             onConfirm={() => handleDelete(record)}
             okText="Ha"
             cancelText="Yo'q"
@@ -281,11 +305,11 @@ export const UsersList: React.FC = () => {
     },
   ];
 
-  if (loading && users.length === 0) {
+  if (loading && patients.length === 0) {
     return (
       <div style={{ textAlign: "center", padding: "50px" }}>
         <Spin size="large" />
-        <div style={{ marginTop: 16 }}>Foydalanuvchilar yuklanmoqda...</div>
+        <div style={{ marginTop: 16 }}>Bemorlar yuklanmoqda...</div>
       </div>
     );
   }
@@ -295,9 +319,9 @@ export const UsersList: React.FC = () => {
       title={
         <Space>
           <FilterOutlined />
-          <span>Foydalanuvchilar Boshqaruvi</span>
-          {users.length > 0 && (
-            <Tag color="blue">Jami: {pagination.total || users.length}</Tag>
+          <span>Bemorlar Boshqaruvi</span>
+          {patients.length > 0 && (
+            <Tag color="blue">Jami: {pagination.total || patients.length}</Tag>
           )}
           {hasActiveFilters() && <Tag color="orange">Filtrlar qo'llangan</Tag>}
         </Space>
@@ -319,7 +343,7 @@ export const UsersList: React.FC = () => {
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >
-            Yangi Foydalanuvchi
+            Yangi Bemor
           </Button>
         </Space>
       }
@@ -339,7 +363,7 @@ export const UsersList: React.FC = () => {
       <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
         <Col xs={24} sm={12} md={8} lg={6}>
           <Search
-            placeholder="Email yoki ism bo'yicha qidirish..."
+            placeholder="Ism, familiya yoki email bo'yicha qidirish..."
             onSearch={handleSearch}
             allowClear
             enterButton
@@ -347,36 +371,35 @@ export const UsersList: React.FC = () => {
         </Col>
         <Col xs={12} sm={6} md={5} lg={4}>
           <Select
-            placeholder="Role"
+            placeholder="Jinsi"
             style={{ width: "100%" }}
-            onChange={handleRoleFilter}
-            value={filters.role}
+            onChange={handleGenderFilter}
+            value={filters.gender}
             allowClear
           >
-            <Option value="admin">Admin</Option>
-            <Option value="doctor">Doctor</Option>
-            <Option value="reception">Reception</Option>
-            <Option value="user">User</Option>
+            <Option value="male">Erkak</Option>
+            <Option value="female">Ayol</Option>
+            <Option value="child">Bola</Option>
           </Select>
         </Col>
         <Col xs={12} sm={6} md={5} lg={4}>
           <Select
-            placeholder="Status bo'yicha filtrlash"
-            style={{ width: 180 }}
+            placeholder="Status"
+            style={{ width: "100%" }}
             onChange={handleStatusFilter}
             value={filters.status}
             allowClear
           >
             <Option value="active">Faol</Option>
             <Option value="inactive">Nofaol</Option>
-            {/* <Option value="banned">Bloklangan</Option> - backend qo'llab-quvvatlamaydi */}
+            <Option value="archived">Arxivlangan</Option>
           </Select>
         </Col>
       </Row>
 
       <Table
         columns={columns}
-        dataSource={users}
+        dataSource={patients}
         rowKey="id"
         loading={loading}
         pagination={{
@@ -390,35 +413,41 @@ export const UsersList: React.FC = () => {
           onChange: (page, pageSize) => {
             const newFilters = { ...filters, page, limit: pageSize };
             setFilters(newFilters);
-            fetchUsers(newFilters);
+            fetchPatients(newFilters);
           },
         }}
         scroll={{ x: 1000 }}
         locale={{
-          emptyText: loading ? "Yuklanmoqda..." : "Ma'lumot topilmadi",
+          emptyText: loading ? "Yuklanmoqda..." : "Bemor topilmadi",
         }}
       />
 
-      <CreateUserForm
+      <CreatePatientForm
         visible={createModalVisible}
         onCancel={() => setCreateModalVisible(false)}
         onSuccess={handleCreateSuccess}
+        isModal={true}
       />
 
-      <UserEditModal
+      <PatientEditModal
         visible={editModalVisible}
-        user={selectedUser}
+        patient={selectedPatient}
         onCancel={() => {
           setEditModalVisible(false);
-          setSelectedUser(null);
+          setSelectedPatient(null);
         }}
         onSuccess={handleUpdateSuccess}
+        onUpdatePatient={updatePatient}
+      />
+
+      <PatientViewModal
+        visible={viewModalVisible}
+        patient={selectedPatient}
+        onCancel={() => {
+          setViewModalVisible(false);
+          setSelectedPatient(null);
+        }}
       />
     </Card>
   );
-};
-
-// Initial state for reset
-const initialState = {
-  filters: { page: 1, limit: 10 },
 };
