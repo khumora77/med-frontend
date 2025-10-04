@@ -1,4 +1,4 @@
-// components/UserEditModal.tsx
+// components/UserEditModal.tsx - BACKEND GA MOS
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, Button, Space, message } from 'antd';
 import { useUserStore } from '../../store/user-store';
@@ -40,11 +40,13 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     try {
       const updateData: any = {};
       
+      // Faqat asosiy ma'lumotlarni yangilash
       if (values.email !== user.email) updateData.email = values.email;
       if (values.firstName !== user.firstName) updateData.firstName = values.firstName;
       if (values.lastName !== user.lastName) updateData.lastName = values.lastName;
-      if (values.role !== user.role) updateData.role = values.role;
-      if (values.status !== user.status) updateData.status = values.status;
+
+      // Role va Status alohida endpointlar orqali yangilanadi
+      // Shuning uchun ularni bu yerda o'zgartirmaymiz
 
       if (Object.keys(updateData).length > 0) {
         const success = await updateUser(user.id, updateData);
@@ -66,15 +68,26 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     if (!user) return;
     
     try {
-      const success = await updateUserRole(user.id, { role });
+      console.log('🔍 Changing role to:', role);
+      
+      // Backend UpdateRoleDto ga mos - { role: string }
+      const roleData = { role };
+      
+      const success = await updateUserRole(user.id, roleData);
       if (success) {
         message.success('Role muvaffaqiyatli yangilandi');
+        // Form ni yangilash
+        form.setFieldValue('role', role);
+        // Parent componentga yangilanganligi haqida xabar berish
         onSuccess();
       } else {
         message.error('Role yangilashda xatolik');
+        // Form ni oldingi holatiga qaytarish
+        form.setFieldValue('role', user.role);
       }
     } catch (error) {
       message.error('Xatolik yuz berdi');
+      form.setFieldValue('role', user.role);
     }
   };
 
@@ -82,15 +95,26 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     if (!user) return;
     
     try {
-      const success = await updateUserStatus(user.id, { status });
+      console.log('🔍 Changing status to:', status);
+      
+      // Backend UpdateStatusDto ga mos - { status: string }
+      const statusData = { status };
+      
+      const success = await updateUserStatus(user.id, statusData);
       if (success) {
         message.success('Status muvaffaqiyatli yangilandi');
+        // Form ni yangilash
+        form.setFieldValue('status', status);
+        // Parent componentga yangilanganligi haqida xabar berish
         onSuccess();
       } else {
         message.error('Status yangilashda xatolik');
+        // Form ni oldingi holatiga qaytarish
+        form.setFieldValue('status', user.status);
       }
     } catch (error) {
       message.error('Xatolik yuz berdi');
+      form.setFieldValue('status', user.status);
     }
   };
 
@@ -142,7 +166,11 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         </Form.Item>
 
         <Form.Item name="role" label="Role">
-          <Select onChange={handleRoleChange} placeholder="Roleni tanlang">
+          <Select 
+            onChange={handleRoleChange} 
+            placeholder="Roleni tanlang"
+            disabled={loading}
+          >
             <Option value="admin">Admin</Option>
             <Option value="doctor">Doctor</Option>
             <Option value="reception">Reception</Option>
@@ -151,10 +179,14 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
         </Form.Item>
 
         <Form.Item name="status" label="Status">
-          <Select onChange={handleStatusChange} placeholder="Statusni tanlang">
+          <Select 
+            onChange={handleStatusChange} 
+            placeholder="Statusni tanlang"
+            disabled={loading}
+          >
             <Option value="active">Faol</Option>
             <Option value="inactive">Nofaol</Option>
-            <Option value="banned">Bloklangan</Option>
+            <Option value="blocked">Bloklangan</Option>
           </Select>
         </Form.Item>
 

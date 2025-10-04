@@ -6,7 +6,6 @@ import {
   Button,
   Space,
   Tag,
-  Select,
   Input,
   message,
   Tooltip,
@@ -30,7 +29,7 @@ import { CreateUserForm } from "./create-user";
 import { useUserStore } from "../../store/user-store";
 import type { User } from "../../types/userType";
 
-const { Option } = Select;
+
 const { Search } = Input;
 const { Text } = Typography;
 
@@ -72,28 +71,7 @@ export const UsersList: React.FC = () => {
     fetchUsers(newFilters);
   };
 
-  const handleRoleFilter = (value: string) => {
-    const newFilters = {
-      ...filters,
-      role: value || undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchUsers(newFilters);
-  };
 
-  const handleStatusFilter = (value: string) => {
-    // Faqat active/inactive
-    const newFilters = {
-      ...filters,
-      status: value === "active" || value === "inactive" ? value : undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchUsers(newFilters);
-  };
-
-  // Statusni ko'rsatish funksiyasini yangilaymiz
   const getStatusText = (status: string) => {
     switch (status) {
       case "active":
@@ -194,7 +172,7 @@ export const UsersList: React.FC = () => {
   };
 
   const hasActiveFilters = () => {
-    return !!(filters.search || filters.role || filters.status);
+    return !!(filters.search);
   };
 
   const columns = [
@@ -345,44 +323,17 @@ export const UsersList: React.FC = () => {
             enterButton
           />
         </Col>
-        <Col xs={12} sm={6} md={5} lg={4}>
-          <Select
-            placeholder="Role"
-            style={{ width: "100%" }}
-            onChange={handleRoleFilter}
-            value={filters.role}
-            allowClear
-          >
-            <Option value="admin">Admin</Option>
-            <Option value="doctor">Doctor</Option>
-            <Option value="reception">Reception</Option>
-            <Option value="user">User</Option>
-          </Select>
-        </Col>
-        <Col xs={12} sm={6} md={5} lg={4}>
-          <Select
-            placeholder="Status bo'yicha filtrlash"
-            style={{ width: 180 }}
-            onChange={handleStatusFilter}
-            value={filters.status}
-            allowClear
-          >
-            <Option value="active">Faol</Option>
-            <Option value="inactive">Nofaol</Option>
-            {/* <Option value="banned">Bloklangan</Option> - backend qo'llab-quvvatlamaydi */}
-          </Select>
-        </Col>
-      </Row>
 
+      </Row>
       <Table
         columns={columns}
-        dataSource={users}
+        dataSource={Array.isArray(users) ? users : []} 
         rowKey="id"
         loading={loading}
         pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
-          total: pagination.total,
+          current: pagination.current || 1,
+          pageSize: pagination.pageSize || 10,
+          total: pagination.total || 0,
           showSizeChanger: true,
           showQuickJumper: true,
           showTotal: (total, range) =>

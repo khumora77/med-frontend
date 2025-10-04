@@ -1,6 +1,6 @@
 // src/components/dashboard/UserGrowthChart.tsx
-import React from 'react';
-import { Column } from '@ant-design/charts';
+import React from "react";
+import { Column } from "@ant-design/charts";
 
 interface UserGrowthChartProps {
   data: { month: string; users: number }[];
@@ -9,20 +9,23 @@ interface UserGrowthChartProps {
 export const UserGrowthChart: React.FC<UserGrowthChartProps> = ({ data }) => {
   const config = {
     data,
-    xField: 'month',
-    yField: 'users',
-    color: '#1890ff',
+    xField: "month",
+    yField: "users",
+    color: "#1890ff",
     label: {
-      position: 'middle' as const,
+      position: "middle" as const,
       style: {
-        fill: '#FFFFFF',
+        fill: "#FFFFFF",
         opacity: 0.6,
       },
     },
     xAxis: {
       label: {
-        autoHide: true,
-        autoRotate: false,
+        type: "inner",
+        offset: "-30%",
+        style: {
+          textAlign: "center",
+        },
       },
     },
   };

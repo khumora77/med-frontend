@@ -111,7 +111,6 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
             <Option value="admin">Admin</Option>
             <Option value="doctor">Doctor</Option>
             <Option value="reception">Reception</Option>
-            <Option value="user">User</Option>
           </Select>
         </Form.Item>
 

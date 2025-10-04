@@ -1,37 +1,54 @@
-// store/user-store.ts
+// store/user-store.ts - BACKEND GA MOS
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 import { userService } from "../service/userApi";
-import type {
-  User,
-  UserState,
-  CreateUserDto,
-  UpdateUserDto,
-} from "../types/userType";
 
-interface UserStore extends UserState {
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface UserStore {
+  users: User[];
+  loading: boolean;
+  error: string | null;
+  pagination: { current: number; pageSize: number; total: number };
+  filters: { page: number; limit: number; search?: string; role?: string };
+  
+  // Actions
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setFilters: (filters: Partial<UserState["filters"]>) => void;
+  setFilters: (filters: Partial<{ page: number; limit: number; search?: string; role?: string }>) => void;
   fetchUsers: (params?: any) => Promise<void>;
-  createUser: (userData: CreateUserDto) => Promise<boolean>;
-  updateUser: (id: string, userData: UpdateUserDto) => Promise<boolean>;
-  updateUserRole: (id: string, roleData: { role: string }) => Promise<boolean>;
-  updateUserStatus: (
-    id: string,
-    statusData: { status: string }
-  ) => Promise<boolean>;
+  createUser: (userData: any) => Promise<boolean>;
+  updateUser: (id: string, userData: any) => Promise<boolean>;
+  updateUserRole: (id: string, roleData: { role: string }) => Promise<boolean>; // Object qabul qiladi
+  updateUserStatus: (id: string, statusData: { status: string }) => Promise<boolean>; // Object qabul qiladi
   deleteUser: (id: string) => Promise<boolean>;
   clearError: () => void;
   resetFilters: () => void;
 }
 
-const initialState: UserState = {
+const initialState = {
   users: [],
   loading: false,
   error: null,
   pagination: { current: 1, pageSize: 10, total: 0 },
   filters: { page: 1, limit: 10 },
+};
+
+// Statusni map qilish uchun helper function
+const mapStatus = (isActive: boolean, status?: string): 'active' | 'inactive' => {
+  if (status) {
+    return status === 'active' ? 'active' : 'inactive';
+  }
+  return isActive ? 'active' : 'inactive';
 };
 
 export const useUserStore = create<UserStore>()(
@@ -53,58 +70,50 @@ export const useUserStore = create<UserStore>()(
 
         resetFilters: () => set({ filters: initialState.filters }),
 
-        // store/user-store.ts - SIMPLIFIED VERSION
         fetchUsers: async (params = {}) => {
           set({ loading: true, error: null });
           try {
             const currentFilters = get().filters;
 
-            // Oddiy parametrlar
             const requestParams: any = {
               page: params.page || currentFilters.page || 1,
               limit: params.limit || currentFilters.limit || 10,
             };
 
-            // Faqat asosiy filterlar
             if (params.search && params.search.trim() !== "") {
               requestParams.search = params.search.trim();
             }
             if (params.role) {
               requestParams.role = params.role;
             }
-            if (params.status === "active" || params.status === "inactive") {
-              requestParams.status = params.status;
-            }
 
-            console.log("🔄 Fetching with simplified params:", requestParams);
+            console.log("🔄 Fetching users with params:", requestParams);
             const data = await userService.getAll(requestParams);
 
-            // Ma'lumotlarni qayta ishlash
             let usersArray: User[] = [];
             let totalCount = 0;
 
             if (data) {
               if (data.items && Array.isArray(data.items)) {
                 usersArray = data.items.map((item: any) => ({
-                  id: item.id,
+                  id: item.id || item._id,
                   email: item.email,
-                  firstName: item.firstname || item.firstName || "",
-                  lastName: item.lastname || item.lastName || "",
-                  role: item.role,
-                  status: item.isActive ? "active" : "inactive",
+                  firstName: item.firstName || item.firstname || "",
+                  lastName: item.lastName || item.lastname || "",
+                  role: item.role || "user",
+                  status: mapStatus(item.isActive, item.status),
                   createdAt: item.createdAt,
                   updatedAt: item.updatedAt,
                 }));
-                totalCount = data.total || 0;
+                totalCount = data.total || data.pagination?.total || 0;
               } else if (Array.isArray(data)) {
-                // Agar backend to'g'ridan-to'g'ri array qaytarsa
                 usersArray = data.map((item: any) => ({
-                  id: item.id,
+                  id: item.id || item._id,
                   email: item.email,
-                  firstName: item.firstname || item.firstName || "",
-                  lastName: item.lastname || item.lastName || "",
-                  role: item.role,
-                  status: item.isActive ? "active" : "inactive",
+                  firstName: item.firstName || item.firstname || "",
+                  lastName: item.lastName || item.lastname || "",
+                  role: item.role || "user",
+                  status: mapStatus(item.isActive, item.status),
                   createdAt: item.createdAt,
                   updatedAt: item.updatedAt,
                 }));
@@ -122,20 +131,20 @@ export const useUserStore = create<UserStore>()(
               loading: false,
             });
           } catch (error: any) {
-            console.error("❌ Fetch error:", error);
+            console.error("❌ Fetch users error:", error);
             const errorMessage =
               error.response?.data?.message ||
               error.message ||
-              "Xatolik yuz berdi";
+              "Foydalanuvchilarni yuklashda xatolik";
             set({
               error: errorMessage,
               loading: false,
-              users: [], // Xatolikda bo'sh ro'yxat
+              users: [],
             });
           }
         },
 
-        createUser: async (userData: CreateUserDto) => {
+        createUser: async (userData: any) => {
           set({ loading: true, error: null });
           try {
             await userService.create(userData);
@@ -146,14 +155,12 @@ export const useUserStore = create<UserStore>()(
               error.response?.data?.message ||
               error.message ||
               "Foydalanuvchi yaratishda xatolik";
-            set({ error: errorMessage });
+            set({ error: errorMessage, loading: false });
             return false;
-          } finally {
-            set({ loading: false });
           }
         },
 
-        updateUser: async (id: string, userData: UpdateUserDto) => {
+        updateUser: async (id: string, userData: any) => {
           set({ loading: true, error: null });
           try {
             await userService.update(id, userData);
@@ -164,49 +171,56 @@ export const useUserStore = create<UserStore>()(
               error.response?.data?.message ||
               error.message ||
               "Foydalanuvchi yangilashda xatolik";
-            set({ error: errorMessage });
+            set({ error: errorMessage, loading: false });
             return false;
-          } finally {
-            set({ loading: false });
           }
         },
 
         updateUserRole: async (id: string, roleData: { role: string }) => {
           set({ loading: true, error: null });
           try {
+            console.log('🎭 Store: Updating role:', { id, roleData });
             await userService.updateRole(id, roleData);
-            await get().fetchUsers(get().filters);
+            
+            // Immediate UI update
+            const updatedUsers = get().users.map(user => 
+              user.id === id ? { ...user, role: roleData.role } : user
+            );
+            set({ users: updatedUsers, loading: false });
+            
             return true;
           } catch (error: any) {
+            console.error('❌ UPDATE Role error:', error);
             const errorMessage =
               error.response?.data?.message ||
               error.message ||
               "Role yangilashda xatolik";
-            set({ error: errorMessage });
+            set({ error: errorMessage, loading: false });
             return false;
-          } finally {
-            set({ loading: false });
           }
         },
 
-        updateUserStatus: async (
-          id: string,
-          statusData: { status: string }
-        ) => {
+        updateUserStatus: async (id: string, statusData: { status: string }) => {
           set({ loading: true, error: null });
           try {
+            console.log('🔄 Store: Updating status:', { id, statusData });
             await userService.updateStatus(id, statusData);
-            await get().fetchUsers(get().filters);
+            
+            // Immediate UI update
+            const updatedUsers = get().users.map(user => 
+              user.id === id ? { ...user, status: statusData.status } : user
+            );
+            set({ users: updatedUsers, loading: false });
+            
             return true;
           } catch (error: any) {
+            console.error('❌ UPDATE Status error:', error);
             const errorMessage =
               error.response?.data?.message ||
               error.message ||
               "Status yangilashda xatolik";
-            set({ error: errorMessage });
+            set({ error: errorMessage, loading: false });
             return false;
-          } finally {
-            set({ loading: false });
           }
         },
 
@@ -221,10 +235,8 @@ export const useUserStore = create<UserStore>()(
               error.response?.data?.message ||
               error.message ||
               "Foydalanuvchi o'chirishda xatolik";
-            set({ error: errorMessage });
+            set({ error: errorMessage, loading: false });
             return false;
-          } finally {
-            set({ loading: false });
           }
         },
       }),

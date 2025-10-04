@@ -79,15 +79,7 @@ export const PatientsList: React.FC = () => {
     fetchPatients(newFilters);
   };
 
-  const handleStatusFilter = (value: string) => {
-    const newFilters = {
-      ...filters,
-      status: value || undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchPatients(newFilters);
-  };
+
 
   const handleRefresh = () => {
     fetchPatients(filters);
@@ -197,7 +189,7 @@ export const PatientsList: React.FC = () => {
   };
 
   const hasActiveFilters = () => {
-    return !!(filters.search || filters.gender || filters.status);
+    return !!(filters.search || filters.gender);
   };
 
   const columns = [
@@ -244,14 +236,7 @@ export const PatientsList: React.FC = () => {
         <Tag color={getGenderColor(gender)}>{getGenderText(gender)}</Tag>
       ),
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{getStatusText(status)}</Tag>
-      ),
-    },
+    
     {
       title: "Qo'shilgan sana",
       dataIndex: "createdAt",
@@ -382,19 +367,7 @@ export const PatientsList: React.FC = () => {
             <Option value="child">Bola</Option>
           </Select>
         </Col>
-        <Col xs={12} sm={6} md={5} lg={4}>
-          <Select
-            placeholder="Status"
-            style={{ width: "100%" }}
-            onChange={handleStatusFilter}
-            value={filters.status}
-            allowClear
-          >
-            <Option value="active">Faol</Option>
-            <Option value="inactive">Nofaol</Option>
-            <Option value="archived">Arxivlangan</Option>
-          </Select>
-        </Col>
+
       </Row>
 
       <Table

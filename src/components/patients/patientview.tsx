@@ -25,23 +25,6 @@ export const PatientViewModal: React.FC<PatientViewModalProps> = ({
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'green';
-      case 'inactive': return 'orange';
-      case 'archived': return 'gray';
-      default: return 'default';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Faol';
-      case 'inactive': return 'Nofaol';
-      case 'archived': return 'Arxivlangan';
-      default: return status;
-    }
-  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
@@ -68,11 +51,6 @@ export const PatientViewModal: React.FC<PatientViewModalProps> = ({
         <Descriptions bordered column={2}>
           <Descriptions.Item label="ID" span={1}>
             <Text code>#{patient.id}</Text>
-          </Descriptions.Item>
-          <Descriptions.Item label="Status" span={1}>
-            <Tag color={getStatusColor(patient.status)}>
-              {getStatusText(patient.status)}
-            </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Ism" span={1}>
             {patient.firstName}
