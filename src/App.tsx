@@ -52,12 +52,11 @@ function App() {
             <Route
               path="/changePasswordAdmin"
               element={<ChangePasswordForm />}
-              
             />
-              <Route path="/patients" element={<PatientsList />} />
+            <Route path="/patientsAdmin" element={<PatientsList />} />
           </Route>
           <Route element={<ReceptionSidebar />}>
-            <Route path="/patients" element={<PatientsList />} />
+            <Route path="/patientsReception" element={<PatientsList />} />
             <Route
               path="/changePasswordReception"
               element={<ChangePasswordForm />}

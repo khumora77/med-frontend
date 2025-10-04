@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
   styled,
-  useTheme,
   type Theme,
   type CSSObject,
 } from "@mui/material/styles";
@@ -102,7 +101,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function ReceptionSidebar() {
-  const theme = useTheme();
+
   const [open, setOpen] = React.useState(false);
   const { user } = useAuth();
 
@@ -220,20 +219,23 @@ export default function ReceptionSidebar() {
 
         <Box sx={{ mt: "auto", p: 2 }}>
           <Divider sx={{ mb: 2 }} />
-          <ListItemButton
-            sx={{
-              borderRadius: 1,
-              color: "error.main",
-              "&:hover": {
-                backgroundColor: "error.light",
-                color: "white",
-              },
-            }}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <LogoutButton />
-            </ListItemIcon>
-          </ListItemButton>
+     
+            <ListItemButton
+              sx={{
+                borderRadius: 1,
+                color: "error.main",
+                "&:hover": {
+                  backgroundColor: "error.light",
+                  color: "white",
+                },
+                justifyContent: "center",
+              }}
+            >
+              <ListItemIcon sx={{ color: "inherit", minWidth: "auto" }}>
+                <LogoutButton />
+              </ListItemIcon>
+            </ListItemButton>
+      
         </Box>
       </Drawer>
 

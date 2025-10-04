@@ -27,6 +27,7 @@ import { useAuth } from "../../store/authStore";
 import { LogoutButton } from "./logout";
 import Profile from "./profile";
 import { sidebar } from "../constants";
+import { Tooltip } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -220,20 +221,23 @@ export default function Sidebar() {
 
         <Box sx={{ mt: "auto", p: 2 }}>
           <Divider sx={{ mb: 2 }} />
-          <ListItemButton
-            sx={{
-              borderRadius: 1,
-              color: "error.main",
-              "&:hover": {
-                backgroundColor: "error.light",
-                color: "white",
-              },
-            }}
-          >
-            <ListItemIcon sx={{ color: "inherit" }}>
-              <LogoutButton />
-            </ListItemIcon>
-          </ListItemButton>
+          <Tooltip title="Chiqish" placement="right">
+            <ListItemButton
+              sx={{
+                borderRadius: 1,
+                color: "error.main",
+                "&:hover": {
+                  backgroundColor: "error.light",
+                  color: "white",
+                },
+                justifyContent: "center",
+              }}
+            >
+              <ListItemIcon sx={{ color: "inherit", minWidth: "auto" }}>
+                <LogoutButton />
+              </ListItemIcon>
+            </ListItemButton>
+          </Tooltip>
         </Box>
       </Drawer>
 

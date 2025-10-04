@@ -154,3 +154,4 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
     </Modal>
   );
 };
+export default CreateUserForm;

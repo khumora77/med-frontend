@@ -5,11 +5,11 @@ export const sidebar=[
     {name:"Dashboard", route:"/dashboard", icon:Home},
     {name:"Change-password", route:"/changePasswordAdmin", icon:AccountBox},
     {name:"Users", route:"/users", icon:FaUsers},
-    {name:"Patients", route:"/patients", icon:FaUsers},
+    {name:"Patients", route:"/patientsAdmin", icon:FaUsers},
 ]
 
 export const receptionSidebar=[
     {name:"Home", route:"/reception", icon:Home},
     {name:"Change-password", route:"/changePasswordReception", icon:AccountBox},
-    {name:"Patients", route:"/patients", icon:FaUsers},
+    {name:"Patients", route:"/patientsReception", icon:FaUsers},
 ]
