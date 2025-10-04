@@ -1,4 +1,3 @@
-// components/PatientEditModal.tsx
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, Button, Space, message } from 'antd';
 
@@ -55,7 +54,6 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
     try {
       const updateData: any = {};
       
-      // Faqat o'zgargan maydonlarni yuborish
       if (values.email !== patient.email) updateData.email = values.email;
       if (values.firstName !== patient.firstName) updateData.firstName = values.firstName;
       if (values.lastName !== patient.lastName) updateData.lastName = values.lastName;
@@ -70,10 +68,10 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
           onSuccess();
         }
       } else {
-        message.info('Hech qanday o\'zgartirish kiritilmadi');
+        message.info('No changes made');
       }
     } catch (error) {
-      message.error('Xatolik yuz berdi');
+      message.error('Error');
     } finally {
       setLoading(false);
     }
@@ -86,7 +84,7 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
 
   return (
     <Modal
-      title={`${patient?.firstName} ${patient?.lastName} ni tahrirlash`}
+      title={`${patient?.firstName} ${patient?.lastName} edit the`}
       open={visible}
       onCancel={handleCancel}
       footer={null}
@@ -102,20 +100,20 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
         <div style={{ display: 'flex', gap: 16 }}>
           <Form.Item
             name="firstName"
-            label="Ism"
-            rules={[{ required: true, message: 'Ism kiritishingiz shart' }]}
+            label="First Name"
+            rules={[{ required: true, message: 'You must enter a name' }]}
             style={{ flex: 1 }}
           >
-            <Input placeholder="Bemor ismi" />
+            <Input placeholder="Patient name" />
           </Form.Item>
 
           <Form.Item
             name="lastName"
-            label="Familiya"
-            rules={[{ required: true, message: 'Familiya kiritishingiz shart' }]}
+            label="Last Name"
+            rules={[{ required: true, message: 'You must enter a last name' }]}
             style={{ flex: 1 }}
           >
-            <Input placeholder="Bemor familiyasi" />
+            <Input placeholder="Patient surname" />
           </Form.Item>
         </div>
 
@@ -123,16 +121,16 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
           name="email"
           label="Email"
           rules={[
-            { type: 'email', message: 'To\'g\'ri email formatini kiriting' }
+            { type: 'email', message: 'Please enter the correct email format' }
           ]}
         >
-          <Input placeholder="bemor@example.com" />
+          <Input placeholder="patient@example.com" />
         </Form.Item>
 
         <div style={{ display: 'flex', gap: 16 }}>
           <Form.Item
             name="phone"
-            label="Telefon raqami"
+            label="Phone Number"
             style={{ flex: 1 }}
           >
             <Input placeholder="+998 XX XXX-XX-XX" />
@@ -140,28 +138,20 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
 
           <Form.Item
             name="gender"
-            label="Jinsi"
+            label="Gender"
             style={{ flex: 1 }}
           >
-            <Select placeholder="Jinsini tanlang">
-              <Option value="male">Erkak</Option>
-              <Option value="female">Ayol</Option>
-              <Option value="child">Bola</Option>
+            <Select placeholder="Select gender">
+              <Option value="male">Male</Option>
+              <Option value="female">Female</Option>
+              <Option value="child">Child</Option>
             </Select>
           </Form.Item>
         </div>
 
-        <Form.Item name="status" label="Status">
-          <Select placeholder="Statusni tanlang">
-            <Option value="active">Faol</Option>
-            <Option value="inactive">Nofaol</Option>
-            <Option value="archived">Arxivlangan</Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="notes" label="Izoh">
+          <Form.Item name="notes" label="Note">
           <TextArea 
-            placeholder="Bemor haqida qo'shimcha ma'lumot..." 
+            placeholder="Additional information about the patient..." 
             rows={3}
           />
         </Form.Item>
@@ -169,10 +159,10 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({
         <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
           <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
             <Button onClick={handleCancel} disabled={loading}>
-              Bekor qilish
+              Cancel
             </Button>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Saqlash
+              Save
             </Button>
           </Space>
         </Form.Item>

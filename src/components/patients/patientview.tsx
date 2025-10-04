@@ -1,6 +1,5 @@
-// components/PatientViewModal.tsx
 import React from 'react';
-import { Modal, Descriptions, Tag, Typography } from 'antd';
+import { Modal, Descriptions, Typography } from 'antd';
 import type { Patient } from '../../types/patientsType';
 
 const { Text } = Typography;
@@ -18,9 +17,9 @@ export const PatientViewModal: React.FC<PatientViewModalProps> = ({
 }) => {
   const getGenderText = (gender: string) => {
     switch (gender) {
-      case 'male': return 'Erkak';
-      case 'female': return 'Ayol';
-      case 'child': return 'Bola';
+      case 'male': return 'Male';
+      case 'female': return 'Female';
+      case 'child': return 'Child';
       default: return gender;
     }
   };
@@ -41,7 +40,7 @@ export const PatientViewModal: React.FC<PatientViewModalProps> = ({
 
   return (
     <Modal
-      title={`Bemor ma'lumotlari: ${patient?.firstName} ${patient?.lastName}`}
+      title={`Patient information: ${patient?.firstName} ${patient?.lastName}`}
       open={visible}
       onCancel={onCancel}
       footer={null}
@@ -52,26 +51,26 @@ export const PatientViewModal: React.FC<PatientViewModalProps> = ({
           <Descriptions.Item label="ID" span={1}>
             <Text code>#{patient.id}</Text>
           </Descriptions.Item>
-          <Descriptions.Item label="Ism" span={1}>
+          <Descriptions.Item label="Name" span={1}>
             {patient.firstName}
           </Descriptions.Item>
-          <Descriptions.Item label="Familiya" span={1}>
+          <Descriptions.Item label="Last Name" span={1}>
             {patient.lastName}
           </Descriptions.Item>
           <Descriptions.Item label="Email" span={2}>
             {patient.email || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="Telefon" span={1}>
+          <Descriptions.Item label="Number" span={1}>
             {patient.phone || '-'}
           </Descriptions.Item>
-          <Descriptions.Item label="Jinsi" span={1}>
+          <Descriptions.Item label="Gender" span={1}>
             {getGenderText(patient.gender)}
           </Descriptions.Item>
-          <Descriptions.Item label="Qo'shilgan sana" span={2}>
+          <Descriptions.Item label="Date added" span={2}>
             {formatDate(patient.createdAt)}
           </Descriptions.Item>
           {patient.notes && (
-            <Descriptions.Item label="Izoh" span={2}>
+            <Descriptions.Item label="Note" span={2}>
               {patient.notes}
             </Descriptions.Item>
           )}

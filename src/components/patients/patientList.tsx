@@ -6,16 +6,12 @@ import {
   Button,
   Space,
   Tag,
-  Select,
-  Input,
   message,
   Tooltip,
   Alert,
   Popconfirm,
   Typography,
   Spin,
-  Row,
-  Col,
 } from "antd";
 import {
   PlusOutlined,
@@ -30,9 +26,8 @@ import { PatientEditModal } from "./patientEdit";
 import { CreatePatientForm } from "./create-patient";
 import { PatientViewModal } from "./patientview";
 import { usePatientStore } from "../../store/patientStore";
+import PatientSearch from "./patient-Search";
 
-const { Option } = Select;
-const { Search } = Input;
 const { Text } = Typography;
 
 export const PatientsList: React.FC = () => {
@@ -59,28 +54,6 @@ export const PatientsList: React.FC = () => {
     fetchPatients(filters);
   }, []);
 
-  const handleSearch = (value: string) => {
-    const newFilters = {
-      ...filters,
-      search: value || undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchPatients(newFilters);
-  };
-
-  const handleGenderFilter = (value: string) => {
-    const newFilters = {
-      ...filters,
-      gender: value || undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchPatients(newFilters);
-  };
-
-
-
   const handleRefresh = () => {
     fetchPatients(filters);
   };
@@ -104,10 +77,9 @@ export const PatientsList: React.FC = () => {
     try {
       const success = await deletePatient(patient.id);
       if (success) {
-        message.success("Bemor muvaffaqiyatli o'chirildi");
+        message.success("Patient successfully discharged");
       }
     } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
     }
   };
 
@@ -138,42 +110,15 @@ export const PatientsList: React.FC = () => {
   const getGenderText = (gender: string) => {
     switch (gender) {
       case "male":
-        return "Erkak";
+        return "Male";
       case "female":
-        return "Ayol";
+        return "Female";
       case "child":
-        return "Bola";
+        return "Child";
       default:
         return gender;
     }
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "active":
-        return "green";
-      case "inactive":
-        return "orange";
-      case "archived":
-        return "gray";
-      default:
-        return "default";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "active":
-        return "Faol";
-      case "inactive":
-        return "Nofaol";
-      case "archived":
-        return "Arxivlangan";
-      default:
-        return status;
-    }
-  };
-
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
     try {
@@ -201,7 +146,7 @@ export const PatientsList: React.FC = () => {
       render: (id: string) => <Text type="secondary">#{id?.slice(0, 6)}</Text>,
     },
     {
-      title: "Ism Familiya",
+      title: "First Name",
       dataIndex: "firstName",
       key: "name",
       render: (firstName: string, record: any) => (
@@ -217,7 +162,7 @@ export const PatientsList: React.FC = () => {
       ),
     },
     {
-      title: "Telefon",
+      title: "Number",
       dataIndex: "phone",
       key: "phone",
       render: formatPhone,
@@ -229,28 +174,28 @@ export const PatientsList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: "Jinsi",
+      title: "Gender",
       dataIndex: "gender",
       key: "gender",
       render: (gender: string) => (
         <Tag color={getGenderColor(gender)}>{getGenderText(gender)}</Tag>
       ),
     },
-    
+
     {
-      title: "Qo'shilgan sana",
+      title: "Date added",
       dataIndex: "createdAt",
       key: "createdAt",
       render: formatDate,
     },
     {
-      title: "Harakatlar",
+      title: "Actions",
       key: "actions",
       width: 140,
       fixed: "right" as const,
       render: (record: any) => (
         <Space>
-          <Tooltip title="Ko'rish">
+          <Tooltip title="View">
             <Button
               type="link"
               icon={<EyeOutlined />}
@@ -259,7 +204,7 @@ export const PatientsList: React.FC = () => {
             />
           </Tooltip>
 
-          <Tooltip title="Tahrirlash">
+          <Tooltip title="Edit">
             <Button
               type="link"
               icon={<EditOutlined />}
@@ -269,14 +214,14 @@ export const PatientsList: React.FC = () => {
           </Tooltip>
 
           <Popconfirm
-            title="Bemorni o'chirish"
-            description="Haqiqatan ham bu bemorni o'chirmoqchimisiz?"
+            title="Patient remova"
+            description="Do you really want to delete this patient?"
             onConfirm={() => handleDelete(record)}
-            okText="Ha"
-            cancelText="Yo'q"
+            okText="Yes"
+            cancelText="No"
             okType="danger"
           >
-            <Tooltip title="O'chirish">
+            <Tooltip title="Delete">
               <Button
                 type="link"
                 danger
@@ -294,7 +239,7 @@ export const PatientsList: React.FC = () => {
     return (
       <div style={{ textAlign: "center", padding: "50px" }}>
         <Spin size="large" />
-        <div style={{ marginTop: 16 }}>Bemorlar yuklanmoqda...</div>
+        <div style={{ marginTop: 16 }}>Loading patients...</div>
       </div>
     );
   }
@@ -304,11 +249,11 @@ export const PatientsList: React.FC = () => {
       title={
         <Space>
           <FilterOutlined />
-          <span>Bemorlar Boshqaruvi</span>
+          <span>Patient Management</span>
           {patients.length > 0 && (
-            <Tag color="blue">Jami: {pagination.total || patients.length}</Tag>
+            <Tag color="blue">All: {pagination.total || patients.length}</Tag>
           )}
-          {hasActiveFilters() && <Tag color="orange">Filtrlar qo'llangan</Tag>}
+          {hasActiveFilters() && <Tag color="orange">Filters applied</Tag>}
         </Space>
       }
       extra={
@@ -318,24 +263,24 @@ export const PatientsList: React.FC = () => {
             onClick={handleRefresh}
             loading={loading}
           >
-            Yangilash
+            Update
           </Button>
           {hasActiveFilters() && (
-            <Button onClick={handleClearFilters}>Filtrlarni tozalash</Button>
+            <Button onClick={handleClearFilters}>Cleaning the filters</Button>
           )}
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >
-            Yangi Bemor
+            New Patient
           </Button>
         </Space>
       }
     >
       {error && (
         <Alert
-          message="Xatolik"
+          message="Error"
           description={error}
           type="error"
           showIcon
@@ -345,31 +290,7 @@ export const PatientsList: React.FC = () => {
         />
       )}
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Search
-            placeholder="Ism, familiya yoki email bo'yicha qidirish..."
-            onSearch={handleSearch}
-            allowClear
-            enterButton
-          />
-        </Col>
-        <Col xs={12} sm={6} md={5} lg={4}>
-          <Select
-            placeholder="Jinsi"
-            style={{ width: "100%" }}
-            onChange={handleGenderFilter}
-            value={filters.gender}
-            allowClear
-          >
-            <Option value="male">Erkak</Option>
-            <Option value="female">Ayol</Option>
-            <Option value="child">Bola</Option>
-          </Select>
-        </Col>
-
-      </Row>
-
+      <PatientSearch />
       <Table
         columns={columns}
         dataSource={patients}
@@ -391,7 +312,7 @@ export const PatientsList: React.FC = () => {
         }}
         scroll={{ x: 1000 }}
         locale={{
-          emptyText: loading ? "Yuklanmoqda..." : "Bemor topilmadi",
+          emptyText: loading ? "Loading..." : "Patient not founded",
         }}
       />
 

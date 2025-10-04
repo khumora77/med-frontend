@@ -6,15 +6,12 @@ import {
   Button,
   Space,
   Tag,
-  Input,
   message,
   Tooltip,
   Alert,
   Popconfirm,
   Typography,
   Spin,
-  Row,
-  Col,
 } from "antd";
 import {
   PlusOutlined,
@@ -28,9 +25,8 @@ import { UserEditModal } from "./userEdit";
 import { CreateUserForm } from "./create-user";
 import { useUserStore } from "../../store/user-store";
 import type { User } from "../../types/userType";
+import UserSearch from "./user-search";
 
-
-const { Search } = Input;
 const { Text } = Typography;
 
 export const UsersList: React.FC = () => {
@@ -61,17 +57,6 @@ export const UsersList: React.FC = () => {
     }
   }, [error]);
 
-  const handleSearch = (value: string) => {
-    const newFilters = {
-      ...filters,
-      search: value || undefined,
-      page: 1,
-    };
-    setFilters(newFilters);
-    fetchUsers(newFilters);
-  };
-
-
   const getStatusText = (status: string) => {
     switch (status) {
       case "active":
@@ -101,11 +86,9 @@ export const UsersList: React.FC = () => {
     try {
       const success = await deleteUser(user.id);
       if (success) {
-        message.success("Foydalanuvchi muvaffaqiyatli o'chirildi");
+        message.success("User successfully deleted");
       }
-    } catch (error) {
-      // Error store orqali avtomatik handle qilinadi
-    }
+    } catch (error) {}
   };
 
   const handleUpdateSuccess = () => {
@@ -172,7 +155,7 @@ export const UsersList: React.FC = () => {
   };
 
   const hasActiveFilters = () => {
-    return !!(filters.search);
+    return !!filters.search;
   };
 
   const columns = [
@@ -190,7 +173,7 @@ export const UsersList: React.FC = () => {
       ellipsis: true,
     },
     {
-      title: "Ism",
+      title: "First Name",
       dataIndex: "firstName",
       key: "firstName",
       render: (firstName: string, record: User) => (
@@ -216,19 +199,19 @@ export const UsersList: React.FC = () => {
       ),
     },
     {
-      title: "Yaratilgan",
+      title: "Created",
       dataIndex: "createdAt",
       key: "createdAt",
       render: formatDate,
     },
     {
-      title: "Harakatlar",
+      title: "Actions",
       key: "actions",
       width: 120,
       fixed: "right" as const,
       render: (record: User) => (
         <Space>
-          <Tooltip title="Tahrirlash">
+          <Tooltip title="Editing">
             <Button
               type="link"
               icon={<EditOutlined />}
@@ -236,16 +219,15 @@ export const UsersList: React.FC = () => {
               size="small"
             />
           </Tooltip>
-
           <Popconfirm
-            title="Foydalanuvchini o'chirish"
-            description="Haqiqatan ham bu foydalanuvchini o'chirmoqchimisiz?"
+            title="Delete user"
+            description="Are you sure you want to delete this user?"
             onConfirm={() => handleDelete(record)}
-            okText="Ha"
-            cancelText="Yo'q"
+            okText="Yes"
+            cancelText="No"
             okType="danger"
           >
-            <Tooltip title="O'chirish">
+            <Tooltip title="Delete">
               <Button
                 type="link"
                 danger
@@ -263,7 +245,7 @@ export const UsersList: React.FC = () => {
     return (
       <div style={{ textAlign: "center", padding: "50px" }}>
         <Spin size="large" />
-        <div style={{ marginTop: 16 }}>Foydalanuvchilar yuklanmoqda...</div>
+        <div style={{ marginTop: 16 }}>Loading users...</div>
       </div>
     );
   }
@@ -273,11 +255,11 @@ export const UsersList: React.FC = () => {
       title={
         <Space>
           <FilterOutlined />
-          <span>Foydalanuvchilar Boshqaruvi</span>
+          <span>User Management</span>
           {users.length > 0 && (
-            <Tag color="blue">Jami: {pagination.total || users.length}</Tag>
+            <Tag color="blue">All: {pagination.total || users.length}</Tag>
           )}
-          {hasActiveFilters() && <Tag color="orange">Filtrlar qo'llangan</Tag>}
+          {hasActiveFilters() && <Tag color="orange">Filters applied</Tag>}
         </Space>
       }
       extra={
@@ -287,24 +269,24 @@ export const UsersList: React.FC = () => {
             onClick={handleRefresh}
             loading={loading}
           >
-            Yangilash
+            Update
           </Button>
           {hasActiveFilters() && (
-            <Button onClick={handleClearFilters}>Filtrlarni tozalash</Button>
+            <Button onClick={handleClearFilters}>Cleaning the filters</Button>
           )}
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => setCreateModalVisible(true)}
           >
-            Yangi Foydalanuvchi
+            New User
           </Button>
         </Space>
       }
     >
       {error && (
         <Alert
-          message="Xatolik"
+          message="Error"
           description={error}
           type="error"
           showIcon
@@ -314,20 +296,10 @@ export const UsersList: React.FC = () => {
         />
       )}
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} sm={12} md={8} lg={6}>
-          <Search
-            placeholder="Email yoki ism bo'yicha qidirish..."
-            onSearch={handleSearch}
-            allowClear
-            enterButton
-          />
-        </Col>
-
-      </Row>
+      <UserSearch />
       <Table
         columns={columns}
-        dataSource={Array.isArray(users) ? users : []} 
+        dataSource={Array.isArray(users) ? users : []}
         rowKey="id"
         loading={loading}
         pagination={{
@@ -346,7 +318,7 @@ export const UsersList: React.FC = () => {
         }}
         scroll={{ x: 1000 }}
         locale={{
-          emptyText: loading ? "Yuklanmoqda..." : "Ma'lumot topilmadi",
+          emptyText: loading ? "Loading..." : "Information not found",
         }}
       />
 
@@ -368,8 +340,6 @@ export const UsersList: React.FC = () => {
     </Card>
   );
 };
-
-// Initial state for reset
 const initialState = {
   filters: { page: 1, limit: 10 },
 };

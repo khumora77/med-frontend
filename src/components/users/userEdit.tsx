@@ -1,4 +1,3 @@
-// components/UserEditModal.tsx - BACKEND GA MOS
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, Button, Space, message } from 'antd';
 import { useUserStore } from '../../store/user-store';
@@ -39,28 +38,22 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
     try {
       const updateData: any = {};
-      
-      // Faqat asosiy ma'lumotlarni yangilash
       if (values.email !== user.email) updateData.email = values.email;
       if (values.firstName !== user.firstName) updateData.firstName = values.firstName;
       if (values.lastName !== user.lastName) updateData.lastName = values.lastName;
-
-      // Role va Status alohida endpointlar orqali yangilanadi
-      // Shuning uchun ularni bu yerda o'zgartirmaymiz
-
       if (Object.keys(updateData).length > 0) {
         const success = await updateUser(user.id, updateData);
         if (success) {
-          message.success('Foydalanuvchi muvaffaqiyatli yangilandi');
+          message.success('User updated successfully');
           onSuccess();
         } else {
-          message.error('Yangilashda xatolik');
+          message.error('Update error');
         }
       } else {
-        message.info('Hech qanday o\'zgartirish kiritilmadi');
+        message.info('No changes made.');
       }
     } catch (error) {
-      message.error('Xatolik yuz berdi');
+      message.error('An error occurred.');
     }
   };
 
@@ -69,24 +62,19 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     
     try {
       console.log('🔍 Changing role to:', role);
-      
-      // Backend UpdateRoleDto ga mos - { role: string }
       const roleData = { role };
       
       const success = await updateUserRole(user.id, roleData);
       if (success) {
-        message.success('Role muvaffaqiyatli yangilandi');
-        // Form ni yangilash
+        message.success('Role updated successfully');
         form.setFieldValue('role', role);
-        // Parent componentga yangilanganligi haqida xabar berish
         onSuccess();
       } else {
-        message.error('Role yangilashda xatolik');
-        // Form ni oldingi holatiga qaytarish
+        message.error('Error updating role');
         form.setFieldValue('role', user.role);
       }
     } catch (error) {
-      message.error('Xatolik yuz berdi');
+      message.error('An error occurred');
       form.setFieldValue('role', user.role);
     }
   };
@@ -96,24 +84,19 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
     
     try {
       console.log('🔍 Changing status to:', status);
-      
-      // Backend UpdateStatusDto ga mos - { status: string }
       const statusData = { status };
       
       const success = await updateUserStatus(user.id, statusData);
       if (success) {
-        message.success('Status muvaffaqiyatli yangilandi');
-        // Form ni yangilash
+        message.success('Status updated successfully');
         form.setFieldValue('status', status);
-        // Parent componentga yangilanganligi haqida xabar berish
         onSuccess();
       } else {
-        message.error('Status yangilashda xatolik');
-        // Form ni oldingi holatiga qaytarish
+        message.error('Error updating status');
         form.setFieldValue('status', user.status);
       }
     } catch (error) {
-      message.error('Xatolik yuz berdi');
+      message.error('An error occurred');
       form.setFieldValue('status', user.status);
     }
   };
@@ -125,7 +108,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
   return (
     <Modal
-      title={`${user?.firstName} ${user?.lastName} ni tahrirlash`}
+      title={`${user?.firstName} ${user?.lastName} edit`}
       open={visible}
       onCancel={handleCancel}
       footer={null}
@@ -142,8 +125,8 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
           name="email"
           label="Email"
           rules={[
-            { required: true, message: 'Email kiritishingiz shart' },
-            { type: 'email', message: 'To\'g\'ri email formatini kiriting' }
+            { required: true, message: 'You must enter an email' },
+            { type: 'email', message: 'Please enter the correct email format' }
           ]}
         >
           <Input placeholder="user@example.com" />
@@ -151,52 +134,51 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({
 
         <Form.Item
           name="firstName"
-          label="Ism"
-          rules={[{ required: true, message: 'Ism kiritishingiz shart' }]}
+          label="First Name"
+          rules={[{ required: true, message: 'You must enter a name' }]}
         >
-          <Input placeholder="Foydalanuvchi ismi" />
+          <Input placeholder="User Name" />
         </Form.Item>
 
         <Form.Item
           name="lastName"
-          label="Familiya"
-          rules={[{ required: true, message: 'Familiya kiritishingiz shart' }]}
+          label="Last Name"
+          rules={[{ required: true, message: 'You must enter a last name' }]}
         >
-          <Input placeholder="Foydalanuvchi familiyasi" />
+          <Input placeholder="User Lastname" />
         </Form.Item>
 
         <Form.Item name="role" label="Role">
           <Select 
             onChange={handleRoleChange} 
-            placeholder="Roleni tanlang"
+            placeholder="Select a role"
             disabled={loading}
           >
             <Option value="admin">Admin</Option>
             <Option value="doctor">Doctor</Option>
             <Option value="reception">Reception</Option>
-            <Option value="user">User</Option>
           </Select>
         </Form.Item>
 
         <Form.Item name="status" label="Status">
           <Select 
             onChange={handleStatusChange} 
-            placeholder="Statusni tanlang"
+            placeholder="Select a status"
             disabled={loading}
           >
-            <Option value="active">Faol</Option>
-            <Option value="inactive">Nofaol</Option>
-            <Option value="blocked">Bloklangan</Option>
+            <Option value="active">Active</Option>
+            <Option value="inactive">Inactive</Option>
+            <Option value="blocked">Blocked</Option>
           </Select>
         </Form.Item>
 
         <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
           <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
             <Button onClick={handleCancel} disabled={loading}>
-              Bekor qilish
+            Cancel
             </Button>
             <Button type="primary" htmlType="submit" loading={loading}>
-              Saqlash
+              Save
             </Button>
           </Space>
         </Form.Item>

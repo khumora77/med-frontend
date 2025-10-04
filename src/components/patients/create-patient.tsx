@@ -35,9 +35,9 @@ interface CreatePatientFormProps {
 }
 
 const GENDER_OPTIONS = [
-  { value: "male", label: "Erkak" },
-  { value: "female", label: "Ayol" },
-  { value: "child", label: "Bola" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+  { value: "child", label: "Child" },
 ];
 
 export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
@@ -60,29 +60,29 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
     try {
       const { data } = await api.post("/patients", values);
       
-      console.log("Bemor qo'shildi:", data);
-      message.success(`Bemor qo'shildi: ${data.firstName} ${data.lastName}`);
+      console.log("The patient added:", data);
+      message.success(`The patient added: ${data.firstName} ${data.lastName}`);
       
       form.resetFields();
-      setMsg(`Bemor qo'shildi: ${data.firstName} ${data.lastName}`);
+      setMsg(`The patient added: ${data.firstName} ${data.lastName}`);
       
       if (onSuccess) {
         onSuccess();
       }
       
     } catch (error: any) {
-      console.error("Xatolik:", error);
+      console.error("Error:", error);
       
-      let errorMessage = "Bemor qo'shishda xatolik yuz berdi";
+      let errorMessage = "There was an error adding a patient";
       
       if (error.response?.status === 403) {
-        errorMessage = "Sizda bemor qo'shish uchun ruxsat yo'q";
+        errorMessage = "You do not have permission to add patients";
       } else if (error.response?.status === 409) {
-        errorMessage = "Bu email yoki telefon raqami bilan bemor allaqachon mavjud";
+        errorMessage = "A patient with this email or phone number already exists";
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.code === "NETWORK_ERROR") {
-        errorMessage = "Serverga ulanib bo'lmadi. Internet aloqasini tekshiring";
+        errorMessage = "Could not connect to the server. Check your internet connection";
       }
       
       setErr(errorMessage);
@@ -112,20 +112,20 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
       <div style={{ display: "flex", gap: 16, marginBottom: 0 }}>
         <Form.Item
           name="firstName"
-          label="Ism"
-          rules={[{ required: true, message: "Ism kiritishingiz shart" }]}
+          label="First name"
+          rules={[{ required: true, message: "You must enter a name" }]}
           style={{ flex: 1, marginBottom: 16 }}
         >
-          <Input placeholder="Bemor ismi" />
+          <Input placeholder="Patient Name" />
         </Form.Item>
 
         <Form.Item
           name="lastName"
-          label="Familiya"
-          rules={[{ required: true, message: "Familiya kiritishingiz shart" }]}
+          label="Last name"
+          rules={[{ required: true, message: "You must enter a surname" }]}
           style={{ flex: 1, marginBottom: 16 }}
         >
-          <Input placeholder="Bemor familiyasi" />
+          <Input placeholder="Patient Surname" />
         </Form.Item>
       </div>
 
@@ -133,17 +133,17 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
         name="email"
         label="Email"
         rules={[
-          { type: "email", message: "To'g'ri email formatini kiriting" },
+          { type: "email", message: "Please enter the correct email format" },
         ]}
         style={{ marginBottom: 16 }}
       >
-        <Input placeholder="bemor@example.com" />
+        <Input placeholder="patient@example.com" />
       </Form.Item>
 
       <div style={{ display: "flex", gap: 16, marginBottom: 0 }}>
         <Form.Item
           name="phone"
-          label="Telefon raqami"
+          label="Phone Number"
           style={{ flex: 1, marginBottom: 16 }}
         >
           <Input placeholder="+998 XX XXX-XX-XX" />
@@ -151,10 +151,10 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
 
         <Form.Item
           name="gender"
-          label="Jinsi"
+          label="Gender"
           style={{ flex: 1, marginBottom: 16 }}
         >
-          <Select placeholder="Jinsini tanlang">
+          <Select placeholder="Select gender">
             {GENDER_OPTIONS.map((option) => (
               <Option key={option.value} value={option.value}>
                 {option.label}
@@ -166,11 +166,11 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
 
       <Form.Item
         name="notes"
-        label="Izoh"
+        label="Note"
         style={{ marginBottom: 24 }}
       >
         <TextArea 
-          placeholder="Bemor haqida qo'shimcha ma'lumot..." 
+          placeholder="Additional information about the patient..." 
           rows={3}
         />
       </Form.Item>
@@ -197,7 +197,7 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
               disabled={loading}
               size="large"
             >
-              Bekor qilish
+              Cancel
             </Button>
           )}
           <Button
@@ -206,13 +206,13 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
             loading={loading}
             size="large"
           >
-            {loading ? "Qo'shilyapti..." : "Bemor qo'shish"}
+            {loading ? "Joining..." : "Add patient"}
           </Button>
         </Space>
       </Form.Item>
 
       <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-        * belgisi bilan ko'rsatilgan maydonlar to'ldirilishi shart
+      Fields marked with * are required
       </Typography.Text>
     </Form>
   );
@@ -220,7 +220,7 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
   if (isModal) {
     return (
       <Modal
-        title="Yangi Bemor Qo'shish"
+        title="Add New Patient"
         open={visible}
         onCancel={handleCancel}
         footer={null}
@@ -250,7 +250,7 @@ export const CreatePatientForm: React.FC<CreatePatientFormProps> = ({
       <Card
         title={
           <Typography.Title level={3} style={{ textAlign: "center", margin: 0 }}>
-            Yangi bemor qo'shish
+           Add new patient
           </Typography.Title>
         }
         style={{

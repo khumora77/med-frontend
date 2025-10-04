@@ -31,14 +31,14 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
 
       const success = await createUser(userData);
       if (success) {
-        message.success("Foydalanuvchi muvaffaqiyatli yaratildi");
+        message.success("User created successfully");
         form.resetFields();
         onSuccess();
       } else {
-        message.error("Foydalanuvchi yaratishda xatolik");
+        message.error("Error creating user");
       }
     } catch (error) {
-      message.error("Xatolik yuz berdi");
+      message.error("An error occurred");
     } finally {
       setSubmitting(false);
     }
@@ -61,7 +61,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
 
   return (
     <Modal
-      title="Yangi Foydalanuvchi Yaratish"
+      title="Create a New User"
       open={visible}
       onCancel={handleCancel}
       footer={null}
@@ -79,8 +79,8 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
           name="email"
           label="Email"
           rules={[
-            { required: true, message: "Email kiritishingiz shart" },
-            { type: "email", message: "To'g'ri email formatini kiriting" },
+            { required: true, message: "You must enter an email" },
+            { type: "email", message: "Please enter the correct email format" },
           ]}
         >
           <Input placeholder="user@example.com" size="large" />
@@ -88,26 +88,26 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
 
         <Form.Item
           name="firstName"
-          label="Ism"
-          rules={[{ required: true, message: "Ism kiritishingiz shart" }]}
+          label="First Name"
+          rules={[{ required: true, message: "You must enter a name" }]}
         >
-          <Input placeholder="Foydalanuvchi ismi" size="large" />
+          <Input placeholder="User name" size="large" />
         </Form.Item>
 
         <Form.Item
           name="lastName"
-          label="Familiya"
-          rules={[{ required: true, message: "Familiya kiritishingiz shart" }]}
+          label="Last Name"
+          rules={[{ required: true, message: "You must enter a last name" }]}
         >
-          <Input placeholder="Foydalanuvchi familiyasi" size="large" />
+          <Input placeholder="User lastname" size="large" />
         </Form.Item>
 
         <Form.Item
           name="role"
           label="Role"
-          rules={[{ required: true, message: "Roleni tanlash shart" }]}
+          rules={[{ required: true, message: "It is necessary to choose a role" }]}
         >
-          <Select placeholder="Roleni tanlang" size="large">
+          <Select placeholder="Select a role" size="large">
             <Option value="admin">Admin</Option>
             <Option value="doctor">Doctor</Option>
             <Option value="reception">Reception</Option>
@@ -116,11 +116,11 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
 
         <Form.Item
           name="temporaryPassword"
-          label="Vaqtincha Parol"
-          rules={[{ required: true, message: "Parol kiritishingiz shart" }]}
+          label="Temporary Password"
+          rules={[{ required: true, message: "You must enter a password" }]}
         >
           <Space.Compact style={{ width: "100%" }}>
-            <Input.Password placeholder="Vaqtincha parol" size="large" />
+            <Input.Password placeholder="Temporary password" size="large" />
             <Button
               type="default"
               onClick={generateTemporaryPassword}
@@ -138,7 +138,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
               size="large"
               disabled={submitting || loading}
             >
-              Bekor qilish
+              Cancel
             </Button>
             <Button
               type="primary"
@@ -146,7 +146,7 @@ export const CreateUserForm: React.FC<CreateUserFormProps> = ({
               loading={submitting || loading}
               size="large"
             >
-              Yaratish
+             Create
             </Button>
           </Space>
         </Form.Item>
