@@ -1,4 +1,3 @@
-// components/UsersList.tsx
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -25,7 +24,8 @@ import { UserEditModal } from "./userEdit";
 import { CreateUserForm } from "./create-user";
 import { useUserStore } from "../../store/user-store";
 import type { User } from "../../types/userType";
-import UserSearch from "./user-search";
+import UserSearch from "./user-Search";
+
 
 const { Text } = Typography;
 

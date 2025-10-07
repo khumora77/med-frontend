@@ -1,5 +1,6 @@
 // components/PatientsList.tsx
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // <- qo'shing
 import {
   Table,
   Card,
@@ -31,6 +32,7 @@ import PatientSearch from "./patient-Search";
 const { Text } = Typography;
 
 export const PatientsList: React.FC = () => {
+  const navigate = useNavigate(); // <- qo'shing
   const {
     patients,
     loading,
@@ -71,6 +73,11 @@ export const PatientsList: React.FC = () => {
   const handleView = (patient: any) => {
     setSelectedPatient(patient);
     setViewModalVisible(true);
+  };
+
+  // Patient detail sahifasiga o'tish funksiyasi
+  const handleNameClick = (patient: any) => {
+    navigate(`/patients/${patient.id}`);
   };
 
   const handleDelete = async (patient: any) => {
@@ -146,13 +153,13 @@ export const PatientsList: React.FC = () => {
       render: (id: string) => <Text type="secondary">#{id?.slice(0, 6)}</Text>,
     },
     {
-      title: "First Name",
+      title: "Name",
       dataIndex: "firstName",
       key: "name",
       render: (firstName: string, record: any) => (
         <Button
           type="link"
-          onClick={() => handleView(record)}
+          onClick={() => handleNameClick(record)} // <- o'zgartirildi
           style={{ padding: 0, height: "auto" }}
         >
           <Text strong>

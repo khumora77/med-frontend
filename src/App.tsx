@@ -14,6 +14,9 @@ import { CreateUserForm } from "./components/users/create-user";
 import ReceptionSidebar from "./components/navigation/receptionSidebar";
 import CreatePatientForm from "./components/patients/create-patient";
 import { PatientsList } from "./components/patients/patientList";
+import DoctorSidebar from "./components/navigation/doctorSidebar";
+import { PatientDetail } from "./components/patients/patiendDetail";
+import { AppointmentsList } from "./components/appointments/appointmentList";
 
 function App() {
   return (
@@ -53,7 +56,8 @@ function App() {
               path="/changePasswordAdmin"
               element={<ChangePasswordForm />}
             />
-            <Route path="/patientsAdmin" element={<PatientsList />} />
+            <Route path="/patients" element={<PatientsList />} />
+            <Route path="/appointments" element={<AppointmentsList />} />
           </Route>
           <Route element={<ReceptionSidebar />}>
             <Route path="/patientsReception" element={<PatientsList />} />
@@ -62,8 +66,17 @@ function App() {
               element={<ChangePasswordForm />}
             />
           </Route>
+          <Route element={<DoctorSidebar />}>
+          <Route path="/patientsDoctor" element={<PatientsList />} />
+          <Route
+              path="/changePasswordDoctor"
+              element={<ChangePasswordForm />}
+            />
+                 <Route path="/appointmentsDoctor" element={<AppointmentsList />} />
+          </Route>
           <Route path="/create-user" element={<CreateUserForm />} />
           <Route path="/create-patient" element={<CreatePatientForm />} />
+          <Route path="/patients/:id" element={<PatientDetail/>}/>
         </Routes>
       </AuthRefresh>
     </>

@@ -2,26 +2,41 @@
 export interface User {
   id: string;
   email: string;
-  firstName: string; // Backendda firstname
-  lastName: string;  // Backendda lastname  
+  firstName: string;
+  lastName: string;
   role: 'admin' | 'doctor' | 'reception' | 'user';
-  status: 'active' | 'inactive' | 'banned'; // Backendda isActive
+  status: 'active' | 'inactive';
+  phone?: string;
+  specialization?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface CreateUserDto {
   email: string;
-  firstName: string; // Backend firstname ga o'tadi
-  lastName: string;  // Backend lastname ga o'tadi
-  role: 'admin' | 'doctor' | 'reception' | 'user';
-  temporaryPassword: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  temporaryPassword?: string;
+  phone?: string;
+  specialization?: string;
 }
 
 export interface UpdateUserDto {
   email?: string;
-  firstName?: string; // Backend firstname ga o'tadi
-  lastName?: string;  // Backend lastname ga o'tadi
-  role?: 'admin' | 'doctor' | 'reception' | 'user';
-  status?: 'active' | 'inactive' | 'banned'; // Backend isActive ga o'tadi
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  status?: 'active' | 'inactive';
+  phone?: string;
+  specialization?: string;
+}
+
+export interface UserListParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  status?: string;
+  sort?: 'newest' | 'oldest';
 }

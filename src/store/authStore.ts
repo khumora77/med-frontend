@@ -1,6 +1,6 @@
-
-import { create } from "zustand";
+// src/store/auth.ts
 import { api } from "../service/api";
+import { create } from "zustand";
 export type Role = "admin" | "doctor" | "reception";
 export type User = {
   id: string;
@@ -49,7 +49,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         (Array.isArray(err?.response?.data)
           ? err.response.data.join(", ")
           : "") ||
-        "Error";
+        "Parolni almashtirishda xatolik";
       set({ changeError: msg });
       throw err;
     } finally {
