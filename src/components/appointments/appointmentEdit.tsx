@@ -1,5 +1,5 @@
 // components/appointments/AppointmentEditModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import {
   Modal,
   Form,
@@ -183,7 +183,7 @@ export const AppointmentEditModal: React.FC<AppointmentEditModalProps> = ({
           <Select placeholder="Select status">
             <Option value="scheduled">Scheduled</Option>
             <Option value="completed">Completed</Option>
-            <Option value="cancelled">Cancelled</Option>
+            <Option value="canceled">Canceled</Option>
             <Option value="no-show">No Show</Option>
           </Select>
         </Form.Item>

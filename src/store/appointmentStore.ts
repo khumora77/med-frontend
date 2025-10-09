@@ -1,6 +1,5 @@
-// store/appointmentStore.ts
 import { create } from 'zustand';
-import { appointmentService } from '../service/appointmentApi';
+import { appointmentService, type ListAppointmentsParams } from '../service/appointmentApi';
 
 interface Appointment {
   id: string;
@@ -26,17 +25,6 @@ interface Appointment {
   };
 }
 
-interface ListAppointmentsParams {
-  page?: number;
-  limit?: number;
-  patientId?: string;
-  doctorId?: string;
-  status?: string;
-  startDate?: string;
-  endDate?: string;
-  sort?: 'startAsc' | 'startDesc' | 'newest' | 'oldest';
-}
-
 interface AppointmentState {
   appointments: Appointment[];
   loading: boolean;
@@ -48,13 +36,13 @@ interface AppointmentState {
   };
   filters: ListAppointmentsParams;
   
-  // Actions
   fetchAppointments: (params?: ListAppointmentsParams) => Promise<void>;
   fetchAppointmentById: (id: string) => Promise<Appointment | null>;
   createAppointment: (data: any) => Promise<boolean>;
   updateAppointment: (id: string, data: any) => Promise<boolean>;
   updateAppointmentStatus: (id: string, status: string) => Promise<boolean>;
   deleteAppointment: (id: string) => Promise<boolean>;
+  getAppointmentsByDoctorId: (doctorId: string) => Appointment[];
   setFilters: (filters: ListAppointmentsParams) => void;
   resetFilters: () => void;
   clearError: () => void;
@@ -74,11 +62,11 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   fetchAppointments: async (params = {}) => {
     set({ loading: true, error: null });
     try {
-      console.log('🔄 Fetching appointments with params:', params);
+      console.log('Fetching appointments with params:', params);
       
       const response = await appointmentService.getAll(params);
       
-      console.log('✅ Received appointments:', response.data.length, 'items');
+      console.log('Received appointments:', response.data.length, 'items');
       
       set({
         appointments: response.data,
@@ -90,7 +78,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         loading: false,
       });
     } catch (error: any) {
-      console.error('💥 Store fetch error:', error);
+      console.error('Store fetch error:', error);
       
       set({
         error: error.response?.data?.message || error.message || 'Failed to fetch appointments',
@@ -172,6 +160,10 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
       });
       return false;
     }
+  },
+  getAppointmentsByDoctorId: (doctorId: string) => {
+    const { appointments } = get();
+    return appointments.filter(appointment => appointment.doctorId === doctorId);
   },
 
   setFilters: (filters: ListAppointmentsParams) => {

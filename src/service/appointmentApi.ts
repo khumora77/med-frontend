@@ -1,4 +1,3 @@
-// services/appointmentApi.ts
 import { api } from "./api";
 
 export interface ListAppointmentsParams {
@@ -7,42 +6,36 @@ export interface ListAppointmentsParams {
   patientId?: string;
   doctorId?: string;
   status?: string;
-  startDate?: string;  // Backendda 'from'
-  endDate?: string;    // Backendda 'to'
+  startDate?: string;
+  endDate?: string;  
   sort?: 'startAsc' | 'startDesc' | 'newest' | 'oldest';
 }
 
 export const appointmentService = {
   getAll: async (params?: ListAppointmentsParams) => {
     try {
-      // Backend DTO ga to'liq mos parametrlar
       const backendParams: any = {
         offset: 0,
         limit: 10,
       };
 
-      // Pagination
       if (params?.page !== undefined && params?.limit !== undefined) {
         backendParams.offset = (params.page - 1) * params.limit;
         backendParams.limit = params.limit;
       }
 
-      // Patient filter
       if (params?.patientId) {
         backendParams.patientId = params.patientId;
       }
 
-      // Doctor filter
       if (params?.doctorId) {
         backendParams.doctorId = params.doctorId;
       }
 
-      // Status filter
       if (params?.status) {
         backendParams.status = params.status;
       }
 
-      // Date range filter
       if (params?.startDate) {
         backendParams.from = params.startDate;
       }
@@ -50,7 +43,6 @@ export const appointmentService = {
         backendParams.to = params.endDate;
       }
 
-      // Sort - backend 'startAsc' yoki 'startDesc' qo'llaydi
       if (params?.sort) {
         if (params.sort === 'newest' || params.sort === 'startDesc') {
           backendParams.sort = 'startDesc';
@@ -59,13 +51,13 @@ export const appointmentService = {
         }
       }
 
-      console.log('📤 Sending appointment request:', backendParams);
+      console.log('Sending appointment request:', backendParams);
       
       const response = await api.get('/appointments', { 
         params: backendParams 
       });
       
-      console.log('📥 Appointment API response:', response.data);
+      console.log('Appointment API response:', response.data);
       
       return {
         data: response.data.items || [],
@@ -73,7 +65,7 @@ export const appointmentService = {
       };
       
     } catch (error: any) {
-      console.error('❌ Appointment API Error:', error.response?.data || error.message);
+      console.error('Appointment API Error:', error.response?.data || error.message);
       throw error;
     }
   },
@@ -90,7 +82,6 @@ export const appointmentService = {
 
   create: async (appointmentData: any) => {
     try {
-      // Frontenddan backend DTO ga o'tkazish
       const backendDto = {
         patientId: appointmentData.patientId,
         doctorId: appointmentData.doctorId,
@@ -100,7 +91,7 @@ export const appointmentService = {
         reason: appointmentData.reason,
       };
 
-      console.log('➕ Creating appointment:', backendDto);
+      console.log('Creating appointment:', backendDto);
       const response = await api.post('/appointments', backendDto);
       return response.data;
     } catch (error: any) {
@@ -120,7 +111,7 @@ export const appointmentService = {
       if (appointmentData.status) backendDto.status = appointmentData.status;
       if (appointmentData.reason !== undefined) backendDto.reason = appointmentData.reason;
 
-      console.log('✏️ Updating appointment:', backendDto);
+      console.log(' Updating appointment:', backendDto);
       const response = await api.patch(`/appointments/${id}`, backendDto);
       return response.data;
     } catch (error: any) {

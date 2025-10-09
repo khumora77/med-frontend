@@ -1,4 +1,3 @@
-// components/appointments/AppointmentSearch.tsx
 import React from 'react';
 import {
   Card,
@@ -82,8 +81,8 @@ export const AppointmentSearch: React.FC = () => {
           >
             <Option value="scheduled">Scheduled</Option>
             <Option value="completed">Completed</Option>
-            <Option value="cancelled">Cancelled</Option>
-            <Option value="no-show">No Show</Option>
+            <Option value="canceled">Canceled</Option>
+
           </Select>
         </Col>
 

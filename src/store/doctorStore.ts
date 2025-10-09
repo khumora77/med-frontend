@@ -1,4 +1,3 @@
-// store/doctorStore.ts
 import { create } from 'zustand';
 import { useAuth } from './authStore';
 
@@ -30,10 +29,10 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
   fetchDoctors: async () => {
     set({ loading: true, error: null });
     try {
-      // Auth store dan token va user ma'lumotlarini olish
+
       const { token, user } = useAuth.getState();
       
-      console.log('🔐 Auth state:', { 
+      console.log('Auth state:', { 
         hasToken: !!token, 
         hasUser: !!user,
         userRole: user?.role 
@@ -43,10 +42,9 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
         throw new Error('No authentication token found. Please login first.');
       }
 
-      console.log('🔄 Fetching all users from API...');
-      console.log('🔑 Using token:', token.substring(0, 20) + '...');
+      console.log('Fetching all users from API...');
+      console.log('Using token:', token.substring(0, 20) + '...');
       
-      // Barcha userlarni olish
       const response = await fetch('http://localhost:3000/users', {
         method: 'GET',
         headers: {
@@ -63,7 +61,7 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
       }
 
       const responseData = await response.json();
-      console.log('📥 All users API response:', responseData);
+      console.log('All users API response:', responseData);
 
       // Responseni qayta ishlash
       let users = [];
@@ -95,8 +93,8 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
           role: user.role
         }));
 
-      console.log('✅ Filtered doctors:', doctors);
-      console.log('🎯 Doctors count:', doctors.length);
+      console.log('Filtered doctors:', doctors);
+      console.log('Doctors count:', doctors.length);
       
       if (doctors.length === 0) {
         throw new Error('No doctors found in the system. Please add doctors first.');
@@ -106,10 +104,10 @@ export const useDoctorStore = create<DoctorState>((set, get) => ({
         doctors, 
         loading: false 
       });
-      console.log('🎉 Successfully loaded', doctors.length, 'doctors from API');
+      console.log('Successfully loaded', doctors.length, 'doctors from API');
       
     } catch (error: any) {
-      console.error('💥 Doctor fetch error:', error);
+      console.error('Doctor fetch error:', error);
       
       set({ 
         doctors: [], 

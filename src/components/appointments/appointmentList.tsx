@@ -1,10 +1,8 @@
-
 import { useAppointmentStore } from "../../store/appointmentStore";
 import { AppointmentEditModal } from "./appointmentEdit";
 import { CreateAppointmentForm } from "./create-appointments";
 import { AppointmentViewModal } from "./appointmentView";
 import { AppointmentSearch } from "./appointmentSearch";
-// components/appointments/AppointmentsList.tsx
 import React, { useState, useEffect } from "react";
 import {
   Table,
@@ -25,7 +23,6 @@ import {
   EditOutlined,
   DeleteOutlined,
   ReloadOutlined,
-  FilterOutlined,
   EyeOutlined,
   CalendarOutlined,
 } from "@ant-design/icons";
@@ -118,10 +115,8 @@ export const AppointmentsList: React.FC = () => {
         return "blue";
       case "completed":
         return "green";
-      case "cancelled":
+      case "canceled":
         return "red";
-      case "no-show":
-        return "orange";
       default:
         return "default";
     }
@@ -168,11 +163,11 @@ export const AppointmentsList: React.FC = () => {
       title: "Doctor",
       dataIndex: "doctor",
       key: "doctor",
-      render: (doctor: any) => (
-        <Text>
-          Dr. {doctor?.firstname} {doctor?.lastname}
-        </Text>
-      ),
+        render: (doctor: any) => (
+          <Text>
+            Dr. {doctor?.firstname} {doctor?.lastname}
+          </Text>
+        ),
     },
     {
       title: "Start Time",
@@ -213,8 +208,7 @@ export const AppointmentsList: React.FC = () => {
         >
           <Option value="scheduled">Scheduled</Option>
           <Option value="completed">Completed</Option>
-          <Option value="cancelled">Cancelled</Option>
-          <Option value="no-show">No Show</Option>
+          <Option value="canceled">Canceled</Option>
         </Select>
       ),
     },

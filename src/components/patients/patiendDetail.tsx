@@ -169,6 +169,12 @@ export const PatientDetail: React.FC = () => {
       default: return "default";
     }
   };
+    const calculateDuration = (startAt: string, endAt: string) => {
+    if (!startAt || !endAt) return 0;
+    const start = new Date(startAt);
+    const end = new Date(endAt);
+    return Math.round((end.getTime() - start.getTime()) / 60000);
+  };
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
@@ -193,31 +199,30 @@ export const PatientDetail: React.FC = () => {
       key: "doctor",
       render: (doctor: any) => (
         <Text>
-          Dr. {doctor?.firstName} {doctor?.lastName}
+          Dr. {doctor?.firstname} {doctor?.lastname}
         </Text>
       ),
     },
-    {
-      title: "Appointment Date",
-      dataIndex: "appointmentDate",
-      key: "appointmentDate",
+     {
+      title: "Start Time",
+      dataIndex: "startAt",
+      key: "startAt",
       render: formatDate,
     },
     {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-      render: (type: string) => (
-        <Tag color={getTypeColor(type)}>
-          {type?.replace('-', ' ').toUpperCase()}
-        </Tag>
-      ),
+      title: "End Time",
+      dataIndex: "endAt",
+      key: "endAt",
+      render: formatDate,
     },
+
     {
       title: "Duration",
-      dataIndex: "duration",
       key: "duration",
-      render: (duration: number) => `${duration} min`,
+      render: (record: any) => {
+        const duration = calculateDuration(record.startAt, record.endAt);
+        return `${duration} min`;
+      },
     },
     {
       title: "Status",
@@ -319,7 +324,7 @@ export const PatientDetail: React.FC = () => {
           </Button>
           <Button
             icon={<EditOutlined />}
-            onClick={() => navigate(`/patients/edit/${patient.id}`)}
+            onClick={() => navigate(`/patients/edit`)}
           >
             Edit Patient
           </Button>
@@ -362,12 +367,6 @@ export const PatientDetail: React.FC = () => {
               </Descriptions.Item>
               <Descriptions.Item label="Email">
                 {patient.email || "-"}
-              </Descriptions.Item>
-              <Descriptions.Item label="Date of Birth">
-                {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : "-"}
-              </Descriptions.Item>
-              <Descriptions.Item label="Address">
-                {patient.address || "-"}
               </Descriptions.Item>
               <Descriptions.Item label="Date Added">
                 {formatDate(patient.createdAt)}
@@ -438,7 +437,7 @@ export const PatientDetail: React.FC = () => {
         </Tabs>
       </Card>
 
-      {/* Modallar */}
+     
       <AppointmentViewModal
         visible={viewModalVisible}
         appointment={selectedAppointment}

@@ -1,4 +1,3 @@
-// components/appointments/CreateAppointmentForm.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -61,12 +60,10 @@ export const CreateAppointmentForm: React.FC<CreateAppointmentFormProps> = ({
 
   const handleSubmit = async (values: any) => {
     try {
-      // Date va Timeni birlashtirish
       const startDate = values.date.format('YYYY-MM-DD');
       const startTime = values.startTime.format('HH:mm:ss');
       const startAt = `${startDate}T${startTime}`;
       
-      // Duration bo'yicha endAt hisoblash
       const endAt = moment(startAt).add(values.duration, 'minutes').format();
 
       const appointmentData = {

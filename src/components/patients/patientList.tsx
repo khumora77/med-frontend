@@ -32,7 +32,7 @@ import PatientSearch from "./patient-Search";
 const { Text } = Typography;
 
 export const PatientsList: React.FC = () => {
-  const navigate = useNavigate(); // <- qo'shing
+  const navigate = useNavigate();
   const {
     patients,
     loading,
@@ -75,7 +75,7 @@ export const PatientsList: React.FC = () => {
     setViewModalVisible(true);
   };
 
-  // Patient detail sahifasiga o'tish funksiyasi
+  
   const handleNameClick = (patient: any) => {
     navigate(`/patients/${patient.id}`);
   };

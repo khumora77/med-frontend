@@ -1,4 +1,3 @@
-// src/components/dashboard/UserGrowthChart.tsx
 import React from "react";
 import { Column } from "@ant-design/charts";
 

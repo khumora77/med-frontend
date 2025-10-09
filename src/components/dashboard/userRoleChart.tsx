@@ -1,4 +1,3 @@
-// src/components/dashboard/UserRoleChart.tsx
 import React from 'react';
 import { Pie } from '@ant-design/charts';
 

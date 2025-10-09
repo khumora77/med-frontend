@@ -1,7 +1,5 @@
-// service/tokenService.ts
 export const tokenService = {
   getToken: () => {
-    // Barcha mumkin bo'lgan token keylarini tekshirish
     const token = 
       localStorage.getItem('token') ||
       sessionStorage.getItem('token') ||
@@ -12,12 +10,12 @@ export const tokenService = {
       localStorage.getItem('userToken') ||
       sessionStorage.getItem('userToken');
     
-    console.log('🔍 Token search - found:', !!token);
+    console.log('Token search - found:', !!token);
     return token;
   },
   
   setToken: (token: string, remember: boolean = true) => {
-    console.log('💾 Saving token to storage');
+    console.log('Saving token to storage');
     if (remember) {
       localStorage.setItem('token', token);
     } else {
@@ -44,7 +42,7 @@ export const tokenService = {
   // Token borligini tekshirish va debug qilish
   debugToken: () => {
     const token = tokenService.getToken();
-    console.log('🔐 Token debug:', {
+    console.log('Token debug:', {
       hasToken: !!token,
       token: token ? token.substring(0, 20) + '...' : 'No token',
       localStorage: localStorage.getItem('token') ? 'Has token' : 'No token',
