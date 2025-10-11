@@ -18,7 +18,9 @@ import { PatientDetail } from "./components/patients/patiendDetail";
 import { AppointmentsList } from "./components/appointments/appointmentList";
 import DoctorDashboard from "./components/dashboard/doctorDashboard";
 import { PatientAppointmentsPage } from "./components/appointments/appointmentPatientDet";
-import { MedicalRecordsList } from "./components/medicalRecords/medicalRecordsList";
+import MedicalRecordsList from "./components/medicalRecords/medicalRecordsList";
+
+
 
 
 
