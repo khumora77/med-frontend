@@ -29,7 +29,6 @@ import {
 import { useAppointmentStore } from "../../store/appointmentStore";
 import { useAuth } from "../../store/auth.store";
 import { AppointmentEditModal } from "../appointments/appointmentEdit";
-import { CreateAppointmentForm } from "../appointments/create-appointments";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import ScheduleIcon from "@mui/icons-material/Schedule";
@@ -42,6 +41,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import MedicalInformationIcon from "@mui/icons-material/MedicalInformation";
+import { CreateAppointmentsD } from "../appointments/createAppointmentsD";
 
 const DoctorDashboard: React.FC = () => {
   const theme = useTheme();
@@ -83,7 +83,10 @@ const DoctorDashboard: React.FC = () => {
     }
   };
 
-  const handleStatusUpdate = async (appointmentId: string, newStatus: string) => {
+  const handleStatusUpdate = async (
+    appointmentId: string,
+    newStatus: string
+  ) => {
     try {
       await updateAppointmentStatus(appointmentId, newStatus);
       fetchAppointmentsByDoctorId(user?.id || "");
@@ -164,7 +167,11 @@ const DoctorDashboard: React.FC = () => {
           background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
         }}
       >
-        <CircularProgress size={60} thickness={4} sx={{ color: blue[600], mb: 2 }} />
+        <CircularProgress
+          size={60}
+          thickness={4}
+          sx={{ color: blue[600], mb: 2 }}
+        />
         <Typography variant="h6" color={grey[600]} fontWeight={500}>
           Loading Dashboard...
         </Typography>
@@ -189,7 +196,12 @@ const DoctorDashboard: React.FC = () => {
   }
 
   return (
-    <Box sx={{ background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+        minHeight: "100vh",
+      }}
+    >
       <Box sx={{ maxWidth: 1400, margin: "0 auto", p: { xs: 2, md: 4 } }}>
         {/* Header */}
         <Box
@@ -202,8 +214,15 @@ const DoctorDashboard: React.FC = () => {
             boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           }}
         >
-          <MedicalInformationIcon sx={{ fontSize: 60, color: blue[600], mb: 2 }} />
-          <Typography variant="h3" fontWeight={800} color={blue[800]} gutterBottom>
+          <MedicalInformationIcon
+            sx={{ fontSize: 60, color: blue[600], mb: 2 }}
+          />
+          <Typography
+            variant="h3"
+            fontWeight={800}
+            color={blue[800]}
+            gutterBottom
+          >
             Doctor’s Dashboard
           </Typography>
           <Typography variant="h6" color={grey[600]} sx={{ mb: 1 }}>
@@ -240,13 +259,24 @@ const DoctorDashboard: React.FC = () => {
                         mr: 2,
                       }}
                     >
-                      {React.cloneElement(stat.icon, { sx: { color: stat.color } })}
+                      {React.cloneElement(stat.icon, {
+                        sx: { color: stat.color },
+                      })}
                     </Box>
                     <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="h4" fontWeight={700} color={stat.color} gutterBottom>
+                      <Typography
+                        variant="h4"
+                        fontWeight={700}
+                        color={stat.color}
+                        gutterBottom
+                      >
                         {stat.value}
                       </Typography>
-                      <Typography variant="h6" fontWeight={600} color={grey[800]}>
+                      <Typography
+                        variant="h6"
+                        fontWeight={600}
+                        color={grey[800]}
+                      >
                         {stat.title}
                       </Typography>
                       <Typography variant="body2" color={grey[600]}>
@@ -261,7 +291,13 @@ const DoctorDashboard: React.FC = () => {
         </Grid>
 
         {/* Appointment List */}
-        <Card sx={{ borderRadius: 3, boxShadow: "0 8px 32px rgba(0,0,0,0.1)", overflow: "hidden" }}>
+        <Card
+          sx={{
+            borderRadius: 3,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+            overflow: "hidden",
+          }}
+        >
           <CardContent sx={{ p: 0 }}>
             <Box
               sx={{
@@ -313,7 +349,9 @@ const DoctorDashboard: React.FC = () => {
             <Box sx={{ p: 3 }}>
               {appointments.length === 0 ? (
                 <Box sx={{ textAlign: "center", py: 8, color: grey[500] }}>
-                  <EventAvailableIcon sx={{ fontSize: 80, mb: 2, opacity: 0.5 }} />
+                  <EventAvailableIcon
+                    sx={{ fontSize: 80, mb: 2, opacity: 0.5 }}
+                  />
                   <Typography variant="h6" gutterBottom>
                     No appointments yet
                   </Typography>
@@ -341,31 +379,62 @@ const DoctorDashboard: React.FC = () => {
                           border: `1px solid ${statusColors.border}`,
                           background: statusColors.bg,
                           transition: "all 0.3s ease",
-                          "&:hover": { boxShadow: "0 4px 12px rgba(0,0,0,0.15)" },
+                          "&:hover": {
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                          },
                         }}
                       >
                         <CardContent sx={{ p: 3 }}>
                           <Grid container spacing={3} alignItems="center">
                             <Grid item xs={12} md={7}>
-                              <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
-                                <PersonIcon sx={{ color: blue[600], mr: 1, mt: 0.5 }} fontSize="small" />
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "flex-start",
+                                  mb: 2,
+                                }}
+                              >
+                                <PersonIcon
+                                  sx={{ color: blue[600], mr: 1, mt: 0.5 }}
+                                  fontSize="small"
+                                />
                                 <Typography variant="h6" fontWeight={600}>
-                                  {appointment.patient?.firstName} {appointment.patient?.lastName}
+                                  {appointment.patient?.firstName}{" "}
+                                  {appointment.patient?.lastName}
                                 </Typography>
                               </Box>
 
                               <Stack spacing={1}>
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                  <PhoneIcon sx={{ color: grey[500], mr: 1, fontSize: 18 }} />
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <PhoneIcon
+                                    sx={{
+                                      color: grey[500],
+                                      mr: 1,
+                                      fontSize: 18,
+                                    }}
+                                  />
                                   <Typography variant="body2" color={grey[700]}>
-                                    {appointment.patient?.phone || "No phone number"}
+                                    {appointment.patient?.phone ||
+                                      "No phone number"}
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                  <CalendarTodayIcon sx={{ color: grey[500], mr: 1, fontSize: 18 }} />
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <CalendarTodayIcon
+                                    sx={{
+                                      color: grey[500],
+                                      mr: 1,
+                                      fontSize: 18,
+                                    }}
+                                  />
                                   <Typography variant="body2" color={grey[700]}>
-                                    {new Date(appointment.startAt).toLocaleDateString("en-US", {
+                                    {new Date(
+                                      appointment.startAt
+                                    ).toLocaleDateString("en-US", {
                                       weekday: "long",
                                       year: "numeric",
                                       month: "long",
@@ -374,10 +443,20 @@ const DoctorDashboard: React.FC = () => {
                                   </Typography>
                                 </Box>
 
-                                <Box sx={{ display: "flex", alignItems: "center" }}>
-                                  <AccessTimeIcon sx={{ color: grey[500], mr: 1, fontSize: 18 }} />
+                                <Box
+                                  sx={{ display: "flex", alignItems: "center" }}
+                                >
+                                  <AccessTimeIcon
+                                    sx={{
+                                      color: grey[500],
+                                      mr: 1,
+                                      fontSize: 18,
+                                    }}
+                                  />
                                   <Typography variant="body2" color={grey[700]}>
-                                    {new Date(appointment.startAt).toLocaleTimeString("en-US", {
+                                    {new Date(
+                                      appointment.startAt
+                                    ).toLocaleTimeString("en-US", {
                                       hour: "2-digit",
                                       minute: "2-digit",
                                     })}
@@ -395,7 +474,8 @@ const DoctorDashboard: React.FC = () => {
                                         borderLeft: `3px solid ${teal[500]}`,
                                       }}
                                     >
-                                      <strong>Reason:</strong> {appointment.reason}
+                                      <strong>Reason:</strong>{" "}
+                                      {appointment.reason}
                                     </Typography>
                                   </Box>
                                 )}
@@ -411,7 +491,10 @@ const DoctorDashboard: React.FC = () => {
                                     value={appointment.status}
                                     label="Status"
                                     onChange={(e) =>
-                                      handleStatusUpdate(appointment.id, e.target.value)
+                                      handleStatusUpdate(
+                                        appointment.id,
+                                        e.target.value
+                                      )
                                     }
                                     sx={{
                                       background: "white",
@@ -421,9 +504,15 @@ const DoctorDashboard: React.FC = () => {
                                       },
                                     }}
                                   >
-                                    <MenuItem value="scheduled">Scheduled</MenuItem>
-                                    <MenuItem value="completed">Completed</MenuItem>
-                                    <MenuItem value="cancelled">Cancelled</MenuItem>
+                                    <MenuItem value="scheduled">
+                                      Scheduled
+                                    </MenuItem>
+                                    <MenuItem value="completed">
+                                      Completed
+                                    </MenuItem>
+                                    <MenuItem value="cancelled">
+                                      Cancelled
+                                    </MenuItem>
                                     <MenuItem value="no-show">No-show</MenuItem>
                                   </Select>
                                 </FormControl>
@@ -452,7 +541,9 @@ const DoctorDashboard: React.FC = () => {
                                       variant="outlined"
                                       color="error"
                                       startIcon={<DeleteIcon />}
-                                      onClick={() => handleDeleteAppointment(appointment.id)}
+                                      onClick={() =>
+                                        handleDeleteAppointment(appointment.id)
+                                      }
                                       fullWidth={isMobile}
                                       size="small"
                                     >
@@ -479,10 +570,11 @@ const DoctorDashboard: React.FC = () => {
           onCancel={handleModalCancel}
           onSuccess={handleModalSuccess}
         />
-        <CreateAppointmentForm
+        <CreateAppointmentsD
           visible={createModalVisible}
           onCancel={handleModalCancel}
           onSuccess={handleModalSuccess}
+          initialPatientId={undefined} // optional
         />
       </Box>
     </Box>

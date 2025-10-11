@@ -84,7 +84,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         loading: false,
       });
     } catch (error: any) {
-      console.error('💥 Store fetch error:', error);
+      console.error('Store fetch error:', error);
       set({
         error: error.response?.data?.message || error.message || 'Failed to fetch appointments',
         loading: false,
@@ -92,15 +92,15 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
     }
   },
 
-  // YANGI METHOD: Faqat ma'lum doctorning appointmentlarini olish
+  // Faqat ma'lum doctorning appointmentlarini olish
   fetchAppointmentsByDoctorId: async (doctorId: string) => {
     set({ loading: true, error: null });
     try {
-      console.log('🎯 Fetching appointments for doctor:', doctorId);
+      console.log('Fetching appointments for doctor:', doctorId);
       
       const response = await appointmentService.getAll({ doctorId });
       
-      console.log('✅ Received doctor appointments:', {
+      console.log('Received doctor appointments:', {
         doctorId,
         count: response.data.length,
         data: response.data
@@ -116,7 +116,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         loading: false,
       });
     } catch (error: any) {
-      console.error('💥 Doctor appointments fetch error:', error);
+      console.error('Doctor appointments fetch error:', error);
       set({
         error: error.response?.data?.message || error.message || 'Failed to fetch doctor appointments',
         loading: false,
@@ -202,7 +202,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   getAppointmentsByDoctorId: (doctorId: string) => {
     const { appointments } = get();
     
-    console.log('🔍 Filtering appointments by doctorId:', {
+    console.log('Filtering appointments by doctorId:', {
       doctorId,
       totalAppointments: appointments.length,
       allDoctorIds: appointments.map(a => a.doctorId),
@@ -210,7 +210,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
     });
     
     const filteredAppointments = appointments.filter(appointment => {
-      console.log('📝 Checking appointment:', {
+      console.log('Checking appointment:', {
         appointmentId: appointment.id,
         appointmentDoctorId: appointment.doctorId,
         matches: appointment.doctorId === doctorId
@@ -218,7 +218,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
       return appointment.doctorId === doctorId;
     });
     
-    console.log('✅ Filtered results:', {
+    console.log('Filtered results:', {
       doctorId,
       filteredCount: filteredAppointments.length,
       filteredAppointments: filteredAppointments
