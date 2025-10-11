@@ -17,6 +17,8 @@ import DoctorSidebar from "./components/navigation/doctorSidebar";
 import { PatientDetail } from "./components/patients/patiendDetail";
 import { AppointmentsList } from "./components/appointments/appointmentList";
 import DoctorDashboard from "./components/dashboard/doctorDashboard";
+import { PatientAppointmentsPage } from "./components/appointments/appointmentPatientDet";
+import { PatientRecordsPage } from "./components/medical-records/medicalRecordsPatientDet";
 
 
 function App() {
@@ -80,6 +82,8 @@ function App() {
           <Route path="/create-patient" element={<CreatePatientForm />} />
           <Route path="/patients/:id" element={<PatientDetail />} />
           <Route path="/change-password" element={<ChangePasswordForm/>}/>
+          <Route path="/patients/:id/appointments" element={<PatientAppointmentsPage/>}/>
+          <Route path="/patients/:id/records" element={<PatientRecordsPage/>}/>
         </Routes>
       </AuthRefresh>
     </>

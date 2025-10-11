@@ -25,6 +25,7 @@ import { CreateUserForm } from "./create-user";
 import { useUserStore } from "../../store/user-store";
 import type { User } from "../../types/userType";
 import UserSearch from "./user-Search";
+import { handleDelete } from "../constants";
 
 
 const { Text } = Typography;
@@ -82,15 +83,13 @@ export const UsersList: React.FC = () => {
     setEditModalVisible(true);
   };
 
-  const handleDelete = async (user: User) => {
-    try {
-      const success = await deleteUser(user.id);
-      if (success) {
-        message.success("User successfully deleted");
-      }
-    } catch (error) {}
-  };
-
+const onDeleteUser = (user: User) => {
+  handleDelete({
+    id: user.id,
+    deleteFn: deleteUser,
+    successMessage: "User successfully deleted",
+  });
+};
   const handleUpdateSuccess = () => {
     setEditModalVisible(false);
     setSelectedUser(null);
@@ -222,7 +221,7 @@ export const UsersList: React.FC = () => {
           <Popconfirm
             title="Delete user"
             description="Are you sure you want to delete this user?"
-            onConfirm={() => handleDelete(record)}
+            onConfirm={() => onDeleteUser(record)}
             okText="Yes"
             cancelText="No"
             okType="danger"
