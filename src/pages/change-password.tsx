@@ -9,7 +9,7 @@ import {
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../store/authStore";
+import { useAuth } from "../store/auth.store";
 import { rolePath } from "../routes/role-path";
 
 const ChangePassword = () => {

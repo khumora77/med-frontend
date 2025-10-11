@@ -18,8 +18,8 @@ export const receptionSidebar=[
 ]
 
 export const doctorSidebar=[
-    {name:"Home", route:"/doctor", icon:Home},
+    {name:"Home", route:"/doctorDashboard", icon:Home},
     {name:"Change-password", route:"/changePasswordDoctor", icon:AccountBox},
     {name:"Patients", route:"/patientsDoctor", icon:FaUsers},
-    {name:"Appointments", route:"/appointmentsDoctor", icon:FaUsers},
+
 ]

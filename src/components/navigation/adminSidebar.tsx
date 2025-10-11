@@ -23,7 +23,7 @@ import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { Link, Outlet } from "react-router-dom";
-import { useAuth } from "../../store/authStore";
+import { useAuth } from "../../store/auth.store";
 import { LogoutButton } from "./logout";
 import Profile from "./profile";
 import { sidebar } from "../constants";

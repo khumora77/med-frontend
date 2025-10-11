@@ -1,3 +1,4 @@
+// store/appointmentStore.ts
 import { create } from 'zustand';
 import { appointmentService, type ListAppointmentsParams } from '../service/appointmentApi';
 
@@ -37,6 +38,7 @@ interface AppointmentState {
   filters: ListAppointmentsParams;
   
   fetchAppointments: (params?: ListAppointmentsParams) => Promise<void>;
+  fetchAppointmentsByDoctorId: (doctorId: string) => Promise<void>;
   fetchAppointmentById: (id: string) => Promise<Appointment | null>;
   createAppointment: (data: any) => Promise<boolean>;
   updateAppointment: (id: string, data: any) => Promise<boolean>;
@@ -62,11 +64,15 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   fetchAppointments: async (params = {}) => {
     set({ loading: true, error: null });
     try {
-      console.log('Fetching appointments with params:', params);
+      console.log('🔄 Fetching all appointments with params:', params);
       
       const response = await appointmentService.getAll(params);
       
-      console.log('Received appointments:', response.data.length, 'items');
+      console.log('✅ Received appointments:', {
+        count: response.data.length,
+        data: response.data,
+        firstAppointment: response.data[0]
+      });
       
       set({
         appointments: response.data,
@@ -78,10 +84,41 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         loading: false,
       });
     } catch (error: any) {
-      console.error('Store fetch error:', error);
-      
+      console.error('💥 Store fetch error:', error);
       set({
         error: error.response?.data?.message || error.message || 'Failed to fetch appointments',
+        loading: false,
+      });
+    }
+  },
+
+  // YANGI METHOD: Faqat ma'lum doctorning appointmentlarini olish
+  fetchAppointmentsByDoctorId: async (doctorId: string) => {
+    set({ loading: true, error: null });
+    try {
+      console.log('🎯 Fetching appointments for doctor:', doctorId);
+      
+      const response = await appointmentService.getAll({ doctorId });
+      
+      console.log('✅ Received doctor appointments:', {
+        doctorId,
+        count: response.data.length,
+        data: response.data
+      });
+      
+      set({
+        appointments: response.data,
+        pagination: {
+          current: 1,
+          pageSize: 10,
+          total: response.total || 0,
+        },
+        loading: false,
+      });
+    } catch (error: any) {
+      console.error('💥 Doctor appointments fetch error:', error);
+      set({
+        error: error.response?.data?.message || error.message || 'Failed to fetch doctor appointments',
         loading: false,
       });
     }
@@ -161,9 +198,33 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
       return false;
     }
   },
+
   getAppointmentsByDoctorId: (doctorId: string) => {
     const { appointments } = get();
-    return appointments.filter(appointment => appointment.doctorId === doctorId);
+    
+    console.log('🔍 Filtering appointments by doctorId:', {
+      doctorId,
+      totalAppointments: appointments.length,
+      allDoctorIds: appointments.map(a => a.doctorId),
+      appointments: appointments
+    });
+    
+    const filteredAppointments = appointments.filter(appointment => {
+      console.log('📝 Checking appointment:', {
+        appointmentId: appointment.id,
+        appointmentDoctorId: appointment.doctorId,
+        matches: appointment.doctorId === doctorId
+      });
+      return appointment.doctorId === doctorId;
+    });
+    
+    console.log('✅ Filtered results:', {
+      doctorId,
+      filteredCount: filteredAppointments.length,
+      filteredAppointments: filteredAppointments
+    });
+    
+    return filteredAppointments;
   },
 
   setFilters: (filters: ListAppointmentsParams) => {

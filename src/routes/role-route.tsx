@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../store/authStore";
+import { useAuth } from "../store/auth.store";
 
 type Role = "admin" | "doctor" | "reception";
 

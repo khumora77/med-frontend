@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { useAuth } from './authStore';
+import { useAuth } from './auth.store';
 
 
 interface Doctor {

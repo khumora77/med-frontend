@@ -1,49 +1,119 @@
-import { useAuth } from "../store/authStore";
+// service/api.ts
 import axios from "axios";
+import { useAuth } from "../store/auth.store";
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
   withCredentials: true,
 });
 
+// Token olish uchun funksiya
+const getToken = () => {
+  try {
+    return useAuth.getState().token;
+  } catch (error) {
+    return null;
+  }
+};
+
+// Yangi token bilan auth ni yangilash
+const updateAuth = (token: string, user: any) => {
+  try {
+    useAuth.getState().login(token, user);
+  } catch (error) {
+    console.error("Auth yangilashda xato:", error);
+  }
+};
+
+// Logout funksiyasi
+const performLogout = () => {
+  try {
+    useAuth.getState().logout();
+    // Login sahifasiga yo'naltirish
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+  } catch (error) {
+    console.error("Logoutda xato:", error);
+  }
+};
+
+// Request interceptor
 api.interceptors.request.use((config) => {
-  const t = useAuth.getState().token;
-  if (t) config.headers.Authorization = `Bearer ${t}`;
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return config;
 });
 
 let refreshing = false;
 let waiters: Array<() => void> = [];
 
+// Response interceptor
 api.interceptors.response.use(
-  (r) => r,
-  async (err) => {
-    const original = err.config;
-    if (err.response?.status === 401 && !original._retry) {
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Auth bilan bog'liq endpointlar uchun interceptor ishlamasin
+    if (originalRequest.url?.includes('/auth/')) {
+      return Promise.reject(error);
+    }
+
+    // 401 xatosi va retry qilinmagan so'rovlar uchun
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      // Agar allaqachon token yangilanayotgan bo'lsa
       if (refreshing) {
-        await new Promise<void>((res) => waiters.push(res));
-        original.headers.Authorization = `Bearer ${useAuth.getState().token}`;
-        original._retry = true;
-        return api(original);
+        await new Promise<void>((resolve) => waiters.push(resolve));
+        const newToken = getToken();
+        if (newToken) {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+        return api(originalRequest);
       }
+
       try {
         refreshing = true;
-        original._retry = true;
-        const { data } = await api.post("/auth/refresh");
-        if (data?.access_token) {
-          useAuth.getState().login(data.access_token, data.user);
-          waiters.forEach((fn) => fn());
+        originalRequest._retry = true;
+
+        // Token yangilash so'rovi - ALOHIDA axios instance orqali
+        // Bu interceptor ga tushib qolmasligi kerak
+        const refreshResponse = await axios.post(
+          `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/auth/refresh`,
+          {},
+          { 
+            withCredentials: true,
+            // Interceptor dan o'tkazmaslik uchun maxsus header
+            headers: {
+              'X-Skip-Interceptor': 'true'
+            }
+          }
+        );
+
+        if (refreshResponse.data?.access_token) {
+          // Yangi token va user ma'lumotlari bilan auth ni yangilash
+          updateAuth(refreshResponse.data.access_token, refreshResponse.data.user);
+          
+          // Kutayotgan so'rovlarni davom ettirish
+          waiters.forEach((resolve) => resolve());
           waiters = [];
-          original.headers.Authorization = `Bearer ${data.access_token}`;
-          return api(original);
+          
+          // Original so'rovni yangi token bilan qayta jo'natish
+          originalRequest.headers.Authorization = `Bearer ${refreshResponse.data.access_token}`;
+          return api(originalRequest);
         }
-      } catch (e) {
-        useAuth.getState().logout();
-        throw e;
+      } catch (refreshError) {
+        // Token yangilash muvaffaqiyatsiz - logout
+        console.error('Token yangilash muvaffaqiyatsiz:', refreshError);
+        performLogout();
+        return Promise.reject(refreshError);
       } finally {
         refreshing = false;
       }
     }
-    throw err;
+
+    return Promise.reject(error);
   }
 );

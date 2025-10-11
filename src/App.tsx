@@ -16,6 +16,7 @@ import { PatientsList } from "./components/patients/patientList";
 import DoctorSidebar from "./components/navigation/doctorSidebar";
 import { PatientDetail } from "./components/patients/patiendDetail";
 import { AppointmentsList } from "./components/appointments/appointmentList";
+import DoctorDashboard from "./components/dashboard/doctorDashboard";
 
 
 function App() {
@@ -73,10 +74,12 @@ function App() {
               path="/changePasswordDoctor"
               element={<ChangePasswordForm />}
             />
-            <Route path="/appointmentsDoctor" element={<AppointmentsList />} />
+            
+            <Route path="/doctorDashboard" element={<DoctorDashboard/>}/>
           </Route>
           <Route path="/create-patient" element={<CreatePatientForm />} />
           <Route path="/patients/:id" element={<PatientDetail />} />
+          <Route path="/change-password" element={<ChangePasswordForm/>}/>
         </Routes>
       </AuthRefresh>
     </>
